@@ -1,0 +1,10 @@
+machine:
+  node:
+    version: 7.10.0
+dependencies:
+  pre:
+    - npm install -g istanbul
+test:
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/mocha/
+    - cp test/test-results.xml $CIRCLE_TEST_REPORTS/mocha
