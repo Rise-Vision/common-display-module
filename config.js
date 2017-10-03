@@ -1,6 +1,7 @@
-const machineId = require("./machine-id.js"),
-  path = require("path"),
-  platform = require("rise-common-electron").platform;
+const machineId = require("./machine-id.js");
+const path = require("path");
+const platform = require("rise-common-electron").platform;
+global.log = global.log || {error:console.log,debug:console.log};
 
 function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
@@ -76,10 +77,39 @@ module.exports = {
       return {};
     }
   },
-  getModuleVersion(moduleName) {
-    let localManifest = module.exports.getManifest();
+  getModuleDir() {
+    return path.join(module.exports.getInstallDir(), "modules");
+  },
+  getModuleVersion(name) {
+    const moduleManifestEntry = module.exports.getManifest()[name];
+    return moduleManifestEntry && moduleManifestEntry.version;
+  },
+  getModulePackage(name) {
+    const modulePath = module.exports.getModulePath(name);
 
-    return (localManifest.modules[moduleName]) ? localManifest.modules[moduleName].version : "";
+    if (!modulePath) {
+      log.error(`No path found for ${name}`);
+      return {};
+    }
+
+    try {
+      return JSON.parse(platform.readTextFileSync(path.join(modulePath, "package.json")));
+    } catch(e) {
+      log.error(`No package json found for ${name}`);
+      return {};
+    }
+  },
+  getModulePath(name) {
+    const moduleVersion = module.exports.getModuleVersion(name);
+    if (!moduleVersion) {
+      log.error(`No version found for ${name}`);
+      return false;
+    }
+
+    return path.join(module.exports.getModuleDir(), name, moduleVersion);
+  },
+  moduleUsesElectron(name) {
+    return module.exports.getModulePackage(name).useElectron;
   },
   getScriptsDir(version) {
     return path.join(module.exports.getInstallerDir(version), "scripts");
