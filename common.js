@@ -1,5 +1,5 @@
 const path = require("path");
-const platform = require("rise-common-electron").platform;
+const {platform} = require("rise-common-electron");
 global.log = global.log || {error:console.log,debug:console.log};
 
 function getDisplaySettingsFileName() {
@@ -49,16 +49,16 @@ function parsePropertyList(list) {
 }
 
 function getMachineIdPath() {
-  return path.join(module.exports.getInstallDir(), "machineid"));
+  return path.join(module.exports.getInstallDir(), "machineid");
 }
 
 module.exports = {
   getMachineIdPath,
   getMachineId() {
     try {
-      return JSON.parse(platform.readTextFileSync(getMachineIdPath()));
+      return platform.readTextFileSync(getMachineIdPath());
     } catch(e) {
-      log.debug(e);
+      log.debug(e.message);
       return "";
     }
   },

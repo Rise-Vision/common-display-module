@@ -14,16 +14,15 @@
   },
   "devDependencies": {
     "istanbul": "^0.4.0",
-    "lolex": "^1.5.2",
     "mocha": "^4.0.0",
     "mocha-junit-reporter": "^1.9.1",
     "simple-mock": "^0.4.1"
   },
   "dependencies": {
-    "primus": "^6.0.1",
     "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.1.2"
   },
   "scripts": {
+    "test-no-coverage": "mocha --recursive test/unit",
     "test": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive test/unit",
     "integration": "mocha -t 10000 test/integration"
   }

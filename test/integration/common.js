@@ -2,9 +2,9 @@ const assert = require("assert");
 const fs = require("fs");
 const {join: pathJoin} = require("path");
 const platform = require("rise-common-electron").platform;
-const config = require("../../config.js");
+const config = require("../../common.js");
 
-describe.only("Config", ()=>{
+describe("Config", ()=>{
   describe("when local module manifest is not present", ()=>{
     beforeEach(()=>{
       try {

@@ -2,7 +2,7 @@ const assert = require("assert"),
 simpleMock = require("simple-mock"),
 mock = simpleMock.mock,
 platform = require("rise-common-electron").platform,
-config = require("../../config.js");
+common = require("../../common.js");
 
 describe("Config", ()=>{
   afterEach(()=>{
@@ -11,17 +11,17 @@ describe("Config", ()=>{
 
   it("gets display settings synchronously", ()=>{
     mock(platform, "readTextFileSync").returnWith("something");
-    assert(config.getDisplaySettingsSync().tempdisplayid);
+    assert(common.getDisplaySettingsSync().tempdisplayid);
   });
 
   it("fails to get display settings asynchronously if text file cannot be read", ()=>{
-    return config.getDisplaySettings()
+    return common.getDisplaySettings()
     .then(assert.fail)
     .catch(assert.ok);
   });
   it("succeeds in getting display settings asynchronously if text file is read", ()=>{
     mock(platform, "readTextFile").resolveWith("text=test");
-    return config.getDisplaySettings()
+    return common.getDisplaySettings()
     .then((resp)=>{
       assert.equal(resp.text, "test");
     })
@@ -30,8 +30,8 @@ describe("Config", ()=>{
 
   it("returns display settings file path", ()=>{
     var displaySettingsPath;
-    mock(config, "getInstallDir").returnWith("root");
-    displaySettingsPath = config.getDisplaySettingsPath();
+    mock(common, "getInstallDir").returnWith("root");
+    displaySettingsPath = common.getDisplaySettingsPath();
     assert.equal(displaySettingsPath, "root/RiseDisplayNetworkII.ini");
   });
 
