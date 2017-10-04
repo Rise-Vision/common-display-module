@@ -2,7 +2,7 @@
   "name": "common-display-module",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "common.js",
   "author": "Rise Vision",
   "license": "GPL-3.0",
   "repository": {
