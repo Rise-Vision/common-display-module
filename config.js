@@ -1,4 +1,3 @@
-const machineId = require("./machine-id.js");
 const path = require("path");
 const platform = require("rise-common-electron").platform;
 global.log = global.log || {error:console.log,debug:console.log};
@@ -21,7 +20,7 @@ function getDisplaySettings() {
 
 function getDisplaySettingsSync() {
   var settings,
-    tempDisplayId = "0." + machineId(),
+    tempDisplayId = "0." + module.exports.getMachineId(),
     configExists = platform.fileExists(getDisplaySettingsFileName()),
     textFileString = configExists ? platform.readTextFileSync(getDisplaySettingsFileName()) : "";
 
@@ -49,7 +48,20 @@ function parsePropertyList(list) {
   return result;
 }
 
+function getMachineIdPath() {
+  return path.join(module.exports.getInstallDir(), "machineid"));
+}
+
 module.exports = {
+  getMachineIdPath,
+  getMachineId() {
+    try {
+      return JSON.parse(platform.readTextFileSync(getMachineIdPath()));
+    } catch(e) {
+      log.debug(e);
+      return "";
+    }
+  },
   deleteFile(fileName, version, cb) {
     const filePath = path.join(module.exports.getInstallDir(version), fileName);
     return platform.callRimraf(filePath, cb);
