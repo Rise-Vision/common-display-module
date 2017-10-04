@@ -33,8 +33,8 @@ function getDisplaySettingsSync() {
   return settings;
 }
 
-function getInstallDir(version) {
-  return path.join(platform.getHomeDir(), "rvplayer", version || "");
+function getInstallDir() {
+  return path.join(platform.getHomeDir(), "rvplayer");
 }
 
 function parsePropertyList(list) {
@@ -96,6 +96,15 @@ module.exports = {
     const moduleManifestEntry = module.exports.getManifest()[name];
     return moduleManifestEntry && moduleManifestEntry.version;
   },
+  getModulePath(name) {
+    const moduleVersion = module.exports.getModuleVersion(name);
+    if (!moduleVersion) {
+      log.error(`No version found for ${name}`);
+      return false;
+    }
+
+    return path.join(module.exports.getModuleDir(), name, moduleVersion);
+  },
   getModulePackage(name) {
     const modulePath = module.exports.getModulePath(name);
 
@@ -110,15 +119,6 @@ module.exports = {
       log.error(`No package json found for ${name}`);
       return {};
     }
-  },
-  getModulePath(name) {
-    const moduleVersion = module.exports.getModuleVersion(name);
-    if (!moduleVersion) {
-      log.error(`No version found for ${name}`);
-      return false;
-    }
-
-    return path.join(module.exports.getModuleDir(), name, moduleVersion);
   },
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
