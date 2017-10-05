@@ -1,0 +1,29 @@
+{
+  "name": "common-display-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "common.js",
+  "author": "Rise Vision",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rise-Vision/common-display-module.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rise-Vision/common-display-module/issues"
+  },
+  "devDependencies": {
+    "istanbul": "^0.4.0",
+    "mocha": "^4.0.0",
+    "mocha-junit-reporter": "^1.15.0",
+    "simple-mock": "^0.4.1"
+  },
+  "dependencies": {
+    "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.1.2"
+  },
+  "scripts": {
+    "test-no-coverage": "mocha --recursive test/unit",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive test/unit",
+    "integration": "mocha -t 10000 test/integration"
+  }
+}
