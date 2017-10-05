@@ -123,9 +123,6 @@ module.exports = {
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
   },
-  getScriptsDir(version) {
-    return path.join(module.exports.getInstallerDir(version), "scripts");
-  },
   parsePropertyList,
   readFile(fileName, version) {
     const filePath = path.join(module.exports.getInstallDir(version), fileName);
