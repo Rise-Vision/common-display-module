@@ -20,6 +20,11 @@ describe("Config", ()=>{
     assert.equal(common.getModuleDir(), pathJoin("rvplayer", "modules"));
   });
 
+  it("gets script dir", ()=>{
+    mock(common, "getInstallDir").returnWith("rvplayer");
+    assert.equal(common.getScriptDir(), pathJoin("rvplayer", "scripts"));
+  });
+
   it("gets display settings synchronously", ()=>{
     mock(platform, "readTextFileSync").returnWith("something");
     assert(common.getDisplaySettingsSync().tempdisplayid);
