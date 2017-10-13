@@ -77,6 +77,9 @@ module.exports = {
   },
   getDisplaySettingsSync,
   getInstallDir,
+  getScriptDir() {
+    return path.join(module.exports.getInstallDir(), "scripts");
+  },
   getManifestPath() {
     return path.join(module.exports.getInstallDir(), "module-manifest.json");
   },
