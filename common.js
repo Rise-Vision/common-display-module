@@ -1,9 +1,55 @@
 const path = require("path");
 const {platform} = require("rise-common-electron");
 global.log = global.log || {error:console.log,debug:console.log};
+let msClient = null;
 
 function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
+}
+
+function getMSClient(id) {
+    if (msClient) {
+      return msClient;
+    } else {
+      const ipc = require('node-ipc');
+      ipc.config.id   = id;
+      ipc.config.retry= 1500;
+
+      ipc.connectTo(
+          'ms',
+          function(){
+              ipc.of.ms.on(
+                  'connect',
+                  function(){
+                      ipc.log('## connected to ms ##', ipc.config.delay);
+                      msClient = {
+                        broadcastMessage: (message) => {
+                          ipc.of.ms.emit('message', message)
+                        },
+                        receiveMessages: (cb) => {
+                          return new Promise((resolve)=>{
+                            ipc.of.ms.on(
+                                'message',
+                                function(message){
+                                    ipc.log('got a message from ms : ', message);
+                                    resolve(message);
+                                }
+                            );
+                          });
+                        }
+                      }
+                      return msClient;
+                  }
+              );
+              ipc.of.ms.on(
+                  'disconnect',
+                  function(){
+                      ipc.log('disconnected from ms');
+                  }
+              );
+          }
+      );
+    }
 }
 
 function getDisplaySettings() {
@@ -123,6 +169,7 @@ module.exports = {
       return {};
     }
   },
+  getMSClient,
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
   },
