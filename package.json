@@ -19,6 +19,7 @@
     "simple-mock": "^0.4.1"
   },
   "dependencies": {
+    "node-ipc": "^9.1.1",
     "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.1.2"
   },
   "scripts": {
