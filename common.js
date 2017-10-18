@@ -8,8 +8,9 @@ function getDisplaySettingsFileName() {
 }
 
 function getMSClient(id) {
+  return new Promise((resolve)=>{
     if (msClient) {
-      return msClient;
+      resolve(msClient);
     } else {
       const ipc = require('node-ipc');
       ipc.config.id   = id;
@@ -38,7 +39,7 @@ function getMSClient(id) {
                           });
                         }
                       }
-                      return msClient;
+                      resolve(msClient);
                   }
               );
               ipc.of.ms.on(
@@ -50,6 +51,7 @@ function getMSClient(id) {
           }
       );
     }
+  });
 }
 
 function getDisplaySettings() {
