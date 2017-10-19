@@ -8,7 +8,7 @@ function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
 }
 
-function getLMSClient(id) {
+function connect(id) {
   return new Promise((resolve)=>{
     if (lmsClient) {
       resolve(lmsClient);
@@ -174,7 +174,7 @@ module.exports = {
       return {};
     }
   },
-  getLMSClient,
+  connect,
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
   },

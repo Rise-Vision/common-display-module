@@ -5,6 +5,7 @@ const config = require("../../common.js");
 describe("LMS", ()=>{
   describe("getLMSClient", ()=>{
     before(()=>{
+      ipc.config.id   = "lms";
       ipc.serve( () => {
 
         ipc.server.on( "message", (data) => {
@@ -21,7 +22,7 @@ describe("LMS", ()=>{
     });
 
     it("should get the msClient object", ()=>{
-      assert.notEqual(config.getLMSClient("ID"), null);
+      assert.notEqual(config.connect("ID"), null);
     });
   });
 });
