@@ -2,7 +2,7 @@ const path = require("path");
 const {platform} = require("rise-common-electron");
 const EventEmitter = require('events');
 global.log = global.log || {error:console.log,debug:console.log};
-let msClient = null;
+let lmsClient = null;
 
 function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
@@ -10,31 +10,31 @@ function getDisplaySettingsFileName() {
 
 function getLMSClient(id) {
   return new Promise((resolve)=>{
-    if (msClient) {
-      resolve(msClient);
+    if (lmsClient) {
+      resolve(lmsClient);
     } else {
       const ipc = require('node-ipc');
       ipc.config.id   = id;
       ipc.config.retry= 1500;
 
       ipc.connectTo(
-          'ms',
+          'lms',
           function(){
-              ipc.of.ms.on(
+              ipc.of.lms.on(
                   'connect',
                   function(){
-                      ipc.log('## connected to ms ##', ipc.config.delay);
-                      msClient = {
+                      ipc.log('## connected to lms ##', ipc.config.delay);
+                      lmsClient = {
                         broadcastMessage: (message) => {
-                          ipc.of.ms.emit('message', message)
+                          ipc.of.lms.emit('message', message)
                         },
                         receiveMessages: () => {
                           return new Promise((resolve)=>{
                             let receiver = new EventEmitter();
-                            ipc.of.ms.on(
+                            ipc.of.lms.on(
                                 'message',
                                 function(message){
-                                    ipc.log('got a message from ms : ', message);
+                                    ipc.log('got a message from lms : ', message);
                                     receiver.emit("message",message);
                                 }
                             );
@@ -42,13 +42,13 @@ function getLMSClient(id) {
                           });
                         }
                       }
-                      resolve(msClient);
+                      resolve(lmsClient);
                   }
               );
-              ipc.of.ms.on(
+              ipc.of.lms.on(
                   'disconnect',
                   function(){
-                      ipc.log('disconnected from ms');
+                      ipc.log('disconnected from lms');
                   }
               );
           }
