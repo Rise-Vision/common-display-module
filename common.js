@@ -1,5 +1,6 @@
 const path = require("path");
 const {platform} = require("rise-common-electron");
+const EventEmitter = require('events');
 global.log = global.log || {error:console.log,debug:console.log};
 let msClient = null;
 
@@ -27,15 +28,17 @@ function getMSClient(id) {
                         broadcastMessage: (message) => {
                           ipc.of.ms.emit('message', message)
                         },
-                        receiveMessages: (cb) => {
+                        receiveMessages: () => {
                           return new Promise((resolve)=>{
+                            let receiver = new EventEmitter();
                             ipc.of.ms.on(
                                 'message',
                                 function(message){
                                     ipc.log('got a message from ms : ', message);
-                                    resolve(message);
+                                    receiver.emit("message",message);
                                 }
                             );
+                            resolve(receiver);
                           });
                         }
                       }
