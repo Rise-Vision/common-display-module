@@ -1,9 +1,64 @@
 const path = require("path");
 const {platform} = require("rise-common-electron");
+const EventEmitter = require('events');
 global.log = global.log || {error:console.log,debug:console.log};
+let lmsClient = null;
+const ipc = require('node-ipc');
 
 function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
+}
+
+function connect(id) {
+  return new Promise((resolve)=>{
+    if (lmsClient) {
+      resolve(lmsClient);
+    } else {
+      ipc.config.id   = id;
+      ipc.config.retry= 1500;
+
+      ipc.connectTo(
+          'lms',
+          function(){
+              ipc.of.lms.on(
+                  'connect',
+                  function(){
+                      ipc.log('## connected to lms ##', ipc.config.delay);
+                      lmsClient = {
+                        broadcastMessage: (message) => {
+                          ipc.of.lms.emit('message', message)
+                        },
+                        receiveMessages: () => {
+                          return new Promise((resolve)=>{
+                            let receiver = new EventEmitter();
+                            ipc.of.lms.on(
+                                'message',
+                                function(message){
+                                    ipc.log('got a message from lms : ', message);
+                                    receiver.emit("message",message);
+                                }
+                            );
+                            resolve(receiver);
+                          });
+                        }
+                      }
+                      resolve(lmsClient);
+                  }
+              );
+              ipc.of.lms.on(
+                  'disconnect',
+                  function(){
+                      ipc.log('disconnected from lms');
+                  }
+              );
+          }
+      );
+    }
+  });
+}
+
+function disconnect() {
+  ipc.disconnect('lms');
 }
 
 function getDisplaySettings() {
@@ -123,6 +178,8 @@ module.exports = {
       return {};
     }
   },
+  connect,
+  disconnect,
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
   },
