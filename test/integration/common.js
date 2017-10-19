@@ -88,6 +88,13 @@ describe("Config", ()=>{
             ipc.log(`client ${destroyedSocketID} has disconnected!`);
           });
         });
+
+        ipc.server.start();
+      });
+
+      after(()=>{
+        ipc.server.stop();
+        config.disconnect();
       });
 
       it("should get the msClient object", ()=>{

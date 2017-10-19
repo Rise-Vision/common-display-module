@@ -3,6 +3,7 @@ const {platform} = require("rise-common-electron");
 const EventEmitter = require('events');
 global.log = global.log || {error:console.log,debug:console.log};
 let lmsClient = null;
+const ipc = require('node-ipc');
 
 function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
@@ -13,7 +14,6 @@ function connect(id) {
     if (lmsClient) {
       resolve(lmsClient);
     } else {
-      const ipc = require('node-ipc');
       ipc.config.id   = id;
       ipc.config.retry= 1500;
 
@@ -55,6 +55,10 @@ function connect(id) {
       );
     }
   });
+}
+
+function disconnect() {
+  ipc.disconnect('lms');
 }
 
 function getDisplaySettings() {
@@ -175,6 +179,7 @@ module.exports = {
     }
   },
   connect,
+  disconnect,
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
   },
