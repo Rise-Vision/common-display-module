@@ -3,7 +3,7 @@ const ipc = require('node-ipc');
 const config = require("../../common.js");
 
 describe("LMS", ()=>{
-  describe("getMSClient", ()=>{
+  describe("getLMSClient", ()=>{
     before(()=>{
       ipc.serve( () => {
 
@@ -21,7 +21,7 @@ describe("LMS", ()=>{
     });
 
     it("should get the msClient object", ()=>{
-      assert.notEqual(config.getMSClient("ID"), null);
+      assert.notEqual(config.getLMSClient("ID"), null);
     });
   });
 });
