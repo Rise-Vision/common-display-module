@@ -29,17 +29,15 @@ function connect(id) {
                           ipc.of.lms.emit('message', message)
                         },
                         receiveMessages: () => {
-                          return new Promise((resolve)=>{
-                            let receiver = new EventEmitter();
-                            ipc.of.lms.on(
-                                'message',
-                                function(message){
-                                    ipc.log('got a message from lms : ', message);
-                                    receiver.emit("message",message);
-                                }
-                            );
-                            resolve(receiver);
-                          });
+                          let receiver = new EventEmitter();
+                          ipc.of.lms.on(
+                              'message',
+                              function(message){
+                                  ipc.log('got a message from lms : ', message);
+                                  receiver.emit("message",message);
+                              }
+                          );
+                          return receiver;
                         }
                       }
                       resolve(lmsClient);
