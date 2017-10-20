@@ -59,6 +59,20 @@ function disconnect() {
   ipc.disconnect('lms');
 }
 
+function broadcastMessage(message) {
+  connect(message.from).then((client)=>{
+    client.broadcastMessage(message);
+  });
+}
+
+function receiveMessages(id) {
+  return new Promise((resolve)=>{
+    connect(id).then((client)=>{
+      resolve(client.receiveMessages());
+    });
+  });
+}
+
 function getDisplaySettings() {
   return new Promise((resolve)=>{
     platform.readTextFile(getDisplaySettingsFileName())
@@ -178,6 +192,8 @@ module.exports = {
   },
   connect,
   disconnect,
+  broadcastMessage,
+  receiveMessages,
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
   },

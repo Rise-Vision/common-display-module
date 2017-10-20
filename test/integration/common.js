@@ -73,10 +73,10 @@ describe("Config", ()=>{
 
   describe("LMS", ()=>{
     describe("connect", ()=>{
-      before(()=>{
+      beforeEach((done)=>{
         ipc.config.id   = "lms";
         ipc.serve( () => {
-
+          done();
           ipc.server.on( "message", (data) => {
             ipc.server.broadcast(
                 "message",
@@ -92,13 +92,56 @@ describe("Config", ()=>{
         ipc.server.start();
       });
 
-      after(()=>{
+      afterEach(()=>{
         ipc.server.stop();
         config.disconnect();
       });
 
       it("should get the msClient object", ()=>{
-        assert.notEqual(config.connect("ID"), null);
+        assert.notEqual(config.connect(), null);
+      });
+
+      it("should broadcast meassage ", (done)=>{
+        ipc.config.id   = "hey";
+        ipc.connectTo(
+            'lms',
+            function(){
+                ipc.of.lms.on(
+                    'connect',
+                    function(){
+                      ipc.of.lms.on(
+                          'message',
+                          function(message){
+                            assert.deepEqual(message, {from: "hey", topic: "hey"});
+                            done();
+                          }
+                      );
+                    }
+                );
+            }
+        );
+        config.broadcastMessage({from: "hey", topic: "hey"});
+      });
+
+      it("should get the message from receiveMessages", (done)=>{
+        config.receiveMessages().then((receiver)=>{
+          receiver.on("message", (message) => {
+            assert.equal(message, "hey");
+            done();
+          });
+        });
+        ipc.config.id   = "hey2";
+        ipc.connectTo(
+            'lms',
+            function(){
+                ipc.of.lms.on(
+                    'connect',
+                    function(){
+                      ipc.of.lms.emit('message', "hey");
+                    }
+                );
+            }
+        );
       });
     });
   });
