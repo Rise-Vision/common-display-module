@@ -9,11 +9,12 @@ function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
 }
 
-function connect() {
+function connect(id) {
   return new Promise((resolve)=>{
     if (lmsClient) {
       resolve(lmsClient);
     } else {
+      ipc.config.id   = id;
       ipc.config.retry= 1500;
 
       ipc.connectTo(
@@ -25,7 +26,6 @@ function connect() {
                       ipc.log('## connected to lms ##', ipc.config.delay);
                       lmsClient = {
                         broadcastMessage: (message) => {
-                          ipc.config.id   = message.from;
                           ipc.of.lms.emit('message', message)
                         },
                         receiveMessages: () => {
@@ -60,14 +60,14 @@ function disconnect() {
 }
 
 function broadcastMessage(message) {
-  connect().then((client)=>{
+  connect(message.from).then((client)=>{
     client.broadcastMessage(message);
   });
 }
 
-function receiveMessages() {
+function receiveMessages(id) {
   return new Promise((resolve)=>{
-    connect().then((client)=>{
+    connect(id).then((client)=>{
       resolve(client.receiveMessages());
     });
   });
