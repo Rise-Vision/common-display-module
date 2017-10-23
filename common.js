@@ -186,7 +186,7 @@ module.exports = {
     try {
       return JSON.parse(platform.readTextFileSync(path.join(modulePath, "package.json")));
     } catch(e) {
-      log.error(`No package json found for ${name}`);
+      log.debug(`No package json found for ${name}`);
       return {};
     }
   },
