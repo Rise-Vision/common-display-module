@@ -194,6 +194,9 @@ module.exports = {
   disconnect,
   broadcastMessage,
   receiveMessages,
+  moduleIsBackgroundTask(name) {
+    return module.exports.getModulePackage(name).backgroundTask;
+  },
   moduleUsesElectron(name) {
     return module.exports.getModulePackage(name).useElectron;
   },
