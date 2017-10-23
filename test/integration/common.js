@@ -38,7 +38,7 @@ describe("Config", ()=>{
   describe("when a module is installed and contains a package.json", ()=>{
     beforeEach(()=>{
       platform.writeTextFileSync(config.getManifestPath(), `{"test":{"version": "01.01"}}`);
-      platform.writeTextFileSync(pathJoin(config.getModulePath("test"), "package.json"), `{"useElectron":true}`);
+      platform.writeTextFileSync(pathJoin(config.getModulePath("test"), "package.json"), `{"useElectron":true, "backgroundTask":true}`);
     });
 
     afterEach(()=>{
@@ -48,6 +48,10 @@ describe("Config", ()=>{
 
     it("indicates whether a module uses Electron or not", ()=>{
       assert.equal(config.moduleUsesElectron("test"), true);
+    });
+
+    it("indicates whether a module is a background task or not", ()=> {
+      assert.equal(config.moduleIsBackgroundTask("test"), true);
     });
   });
 
