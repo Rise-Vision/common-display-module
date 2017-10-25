@@ -110,7 +110,7 @@ describe("Config", ()=>{
         assert.notEqual(config.connect(), null);
       });
 
-      xit("should broadcast meassage ", (done)=>{
+      it("should broadcast meassage ", (done)=>{
         ipc.config.id   = "broadcastReceiver";
         ipc.connectTo(
             'lms',
