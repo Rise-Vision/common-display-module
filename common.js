@@ -2,7 +2,7 @@ const path = require("path");
 const {platform} = require("rise-common-electron");
 const EventEmitter = require('events');
 global.log = global.log || {error:console.log,debug:console.log};
-let lmsClient = null;
+let lmsClient = null, ipcConnection = null;
 const ipc = require('node-ipc');
 
 function getDisplaySettingsFileName() {
@@ -10,7 +10,10 @@ function getDisplaySettingsFileName() {
 }
 
 function connect(id) {
-  return new Promise((resolve)=>{
+  if (ipcConnection) {
+    return ipcConnection;
+  }     
+  ipcConnection = new Promise((resolve)=>{
     if (lmsClient) {
       resolve(lmsClient);
     } else {
@@ -49,14 +52,24 @@ function connect(id) {
                       ipc.log('disconnected from lms');
                   }
               );
+            
+              ipc.of.lms.on(
+                  'error',
+                  function(){
+                      ipc.log('error from lms');
+                  }
+              );
           }
       );
     }
   });
+  return ipcConnection;
 }
 
 function disconnect() {
   ipc.disconnect('lms');
+  ipcConnection = null;
+  lmsClient = null;
 }
 
 function broadcastMessage(message) {
