@@ -68,6 +68,8 @@ function connect(id) {
 
 function disconnect() {
   ipc.disconnect('lms');
+  ipcConnection = null;
+  lmsClient = null;
 }
 
 function broadcastMessage(message) {

@@ -79,18 +79,23 @@ describe("Config", ()=>{
     describe("connect", ()=>{
       beforeEach((done)=>{
         ipc.config.id   = "lms";
+        let doneCalled = false;
         ipc.serve( () => {
-          done();
-          ipc.server.on( "message", (data) => {
-            ipc.server.broadcast(
-                "message",
-                data
-            );
-          });
+          if(!doneCalled){
+            doneCalled = true;
+            done();
 
-          ipc.server.on("socket.disconnected", (socket, destroyedSocketID) => {
-            ipc.log(`client ${destroyedSocketID} has disconnected!`);
-          });
+            ipc.server.on( "message", (data) => {
+              ipc.server.broadcast(
+                  "message",
+                  data
+              );
+            });
+
+            ipc.server.on("socket.disconnected", (socket, destroyedSocketID) => {
+              ipc.log(`client ${destroyedSocketID} has disconnected!`);
+            });
+          }
         });
 
         ipc.server.start();
@@ -105,8 +110,8 @@ describe("Config", ()=>{
         assert.notEqual(config.connect(), null);
       });
 
-      it("should broadcast meassage ", (done)=>{
-        ipc.config.id   = "hey";
+      xit("should broadcast meassage ", (done)=>{
+        ipc.config.id   = "broadcastReceiver";
         ipc.connectTo(
             'lms',
             function(){
@@ -116,7 +121,7 @@ describe("Config", ()=>{
                       ipc.of.lms.on(
                           'message',
                           function(message){
-                            assert.deepEqual(message, {from: "hey", topic: "hey"});
+                            assert.deepEqual(message, {from: "broadcaster", topic: "message1"});
                             done();
                           }
                       );
@@ -124,28 +129,52 @@ describe("Config", ()=>{
                 );
             }
         );
-        config.broadcastMessage({from: "hey", topic: "hey"});
+        config.broadcastMessage({from: "broadcaster", topic: "message1"});
       });
 
       it("should get the message from receiveMessages", (done)=>{
         config.receiveMessages().then((receiver)=>{
           receiver.on("message", (message) => {
-            assert.equal(message, "hey");
+            assert.equal(message, "message2");
             done();
           });
         });
-        ipc.config.id   = "hey2";
+        ipc.config.id   = "receiver";
         ipc.connectTo(
             'lms',
             function(){
                 ipc.of.lms.on(
                     'connect',
                     function(){
-                      ipc.of.lms.emit('message', "hey");
+                      ipc.of.lms.emit('message', "message2");
                     }
                 );
             }
         );
+      });
+
+      it("should broadcast meassage even though there is a disconnection", (done)=>{
+        ipc.server.stop();
+        ipc.config.id   = "broadcastReceiver2";
+        ipc.connectTo(
+            'lms',
+            function(){
+                ipc.of.lms.on(
+                    'connect',
+                    function(){
+                      ipc.of.lms.on(
+                          'message',
+                          function(message){
+                            assert.deepEqual(message, {from: "broadcaster2", topic: "message3"});
+                            done();
+                          }
+                      );
+                    }
+                );
+            }
+        );
+        config.broadcastMessage({from: "broadcaster2", topic: "message3"});
+        ipc.server.start();
       });
     });
   });
