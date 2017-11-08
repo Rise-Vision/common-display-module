@@ -132,6 +132,30 @@ describe("Config", ()=>{
         config.broadcastMessage({from: "broadcaster", topic: "message1"});
       });
 
+      it("should broadcast meassage to ms ", (done)=>{
+        ipc.config.id   = "broadcastReceiver";
+        ipc.connectTo(
+            'lms',
+            function(){
+                ipc.of.lms.on(
+                    'connect',
+                    function(){
+                      ipc.of.lms.on(
+                          'message',
+                          function(message){
+                            console.log(message);
+                            assert.deepEqual(message, {through: "ms", from: "broadcaster", topic: "watch", data:{}});
+                            done();
+                          }
+                      );
+                    }
+                );
+            }
+        );
+        config.sendToMessagingService({from: "broadcaster", topic: "watch", data:{}});
+      });
+
+
       it("should get the message from receiveMessages", (done)=>{
         config.receiveMessages().then((receiver)=>{
           receiver.on("message", (message) => {
