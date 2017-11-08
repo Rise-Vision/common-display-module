@@ -31,6 +31,9 @@ function connect(id) {
                         broadcastMessage: (message) => {
                           ipc.of.lms.emit('message', message)
                         },
+                        toMessagingService: (message) => {
+                          ipc.of.lms.emit("message", Object.assign({}, message, {through: "ms"}));
+                        },
                         receiveMessages: () => {
                           let receiver = new EventEmitter();
                           ipc.of.lms.on(
@@ -83,6 +86,12 @@ function receiveMessages(id) {
     connect(id).then((client)=>{
       resolve(client.receiveMessages());
     });
+  });
+}
+
+function sendToMessagingService(message) {
+  connect(message.from).then((client)=>{
+    client.toMessagingService(message);
   });
 }
 
@@ -206,6 +215,7 @@ module.exports = {
   connect,
   disconnect,
   broadcastMessage,
+  sendToMessagingService,
   receiveMessages,
   moduleIsBackgroundTask(name) {
     return module.exports.getModulePackage(name).backgroundTask;
