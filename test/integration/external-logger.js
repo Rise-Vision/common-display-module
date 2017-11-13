@@ -41,7 +41,7 @@ describe("External Logger", ()=>{
         config.disconnect();
       });
 
-      it("should broadcast log message to ms for loggig module", (done)=>{
+      it("should broadcast log message to ms for logging module", (done)=>{
         const externalLogger = require('../../external-logger')("projectName", "databaseName", "testFile");
 
         ipc.config.id   = "broadcastReceiver";
@@ -54,17 +54,18 @@ describe("External Logger", ()=>{
                       ipc.of.lms.on(
                           'message',
                           function(message){
-                            var expectedObject = {
-                                                  topic: 'log',
-                                                  data: {
-                                                    projectName: 'projectName',
-                                                    datasetName: 'databaseName',
-                                                    failedEntryFile: 'testFile',
-                                                    table: 'testTable',
-                                                    data: {}
-                                                  }
-                                                };
-                            assert.deepEqual(message, expectedObject);
+                            let expectedMessage = {
+                              from: 'testFrom',
+                              topic: 'log',
+                              data: {
+                                projectName: 'projectName',
+                                datasetName: 'databaseName',
+                                failedEntryFile: 'testFile',
+                                table: 'testTable',
+                                data: {}
+                              }
+                            };
+                            assert.deepEqual(message, expectedMessage);
                             done();
                           }
                       );
@@ -72,7 +73,7 @@ describe("External Logger", ()=>{
                 );
             }
         );
-        externalLogger.log("testTable", {});
+        externalLogger.log("testFrom", "testTable", {});
       });
     });
   });
