@@ -55,14 +55,17 @@ describe("External Logger", ()=>{
                           'message',
                           function(message){
                             let expectedMessage = {
-                              from: 'testFrom',
                               topic: 'log',
+                              from: 'testFrom',
                               data: {
-                                projectName: 'projectName',
-                                datasetName: 'databaseName',
-                                failedEntryFile: 'testFile',
-                                table: 'testTable',
-                                data: {}
+                                'projectName': 'projectName',
+                                'datasetName': 'databaseName',
+                                'failedEntryFile': 'testFile',
+                                'table': 'testTable',
+                                'data': {
+                                  'event': 'testEvent',
+                                  'detail': 'testDetail'
+                                }
                               }
                             };
                             assert.deepEqual(message, expectedMessage);
@@ -73,7 +76,7 @@ describe("External Logger", ()=>{
                 );
             }
         );
-        externalLogger.log("testFrom", "testTable", {});
+        externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
       });
     });
   });

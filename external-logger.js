@@ -20,7 +20,9 @@ function validateMessage(message) {
   } else if(!message.data.table) {
     error = "BQ table is required";
   } else if(!message.data.data) {
-    error = message.data.data + " BQ details is required";
+    error = "BQ details is required";
+  } else if(!message.data.data.event) {
+    error = "BQ event is required";
   }
 
   return error;
@@ -31,21 +33,22 @@ module.exports = (projectName, dataSetName, failedEntryFile)=>{
   return {
     /**
      * Configures message for broadcasting via LM to Logger module
-     * @param {string} table
-     * @param {object} detail
-     * @param {string} from
+     * @param {string} evt - event required for BQ logging
+     * @param {object} detail - module specific BQ data to log
+     * @param {string} table - the BQ table to log to
+     * @param {string} from - from what module
      */
-    log (from, table, detail) {
+    log (evt, detail, table, from) {
       let message = {
-        "from": from,
         "topic": "log",
+        "from": from,
         "data": {
           "projectName": projectName,
           "datasetName": dataSetName,
           "failedEntryFile": failedEntryFile,
           "table": table,
-          "data": detail
-        }
+          "data": Object.assign({"event": evt}, detail)
+        },
       }
 
       let messageError = validateMessage(message);
