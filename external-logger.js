@@ -1,16 +1,18 @@
 const config = require("./common");
 
-function validateMessage(message) {
+/**
+ * Validates LM message against BQ entry standards
+ * @param {object} message - event required for BQ logging
+ * @param {object} detail - module specific BQ data to log
+ * @return {string} - error message, empty if no error
+ */
+function validateMessage(message, detail) {
   let error = "";
 
   if(!message){
     error = "Message is required";
   } else if(!message.from) {
     error = "From is required";
-  } else if(!message.topic) {
-    error = "Message topic is required";
-  } else if(!message.data) {
-    error = "BQ data is required";
   } else if(!message.data.projectName) {
     error = "BQ project name is required";
   } else if(!message.data.datasetName) {
@@ -19,17 +21,18 @@ function validateMessage(message) {
     error = "BQ failed entry file is required";
   } else if(!message.data.table) {
     error = "BQ table is required";
-  } else if(!message.data.data) {
-    error = "BQ details is required";
   } else if(!message.data.data.event) {
     error = "BQ event is required";
+  } else if(!Object.keys(detail).length){
+    /* Checks detail separately since its value combined
+    with another object that specifies the event */
+    error = "BQ detail is required";
   }
 
   return error;
 }
 
 module.exports = (projectName, dataSetName, failedEntryFile)=>{
-
   return {
     /**
      * Configures message for broadcasting via LM to Logger module
@@ -51,7 +54,7 @@ module.exports = (projectName, dataSetName, failedEntryFile)=>{
         },
       }
 
-      let messageError = validateMessage(message);
+      let messageError = validateMessage(message, detail);
       if(!messageError) {
         // using LM, in common.js
         config.broadcastMessage(message);

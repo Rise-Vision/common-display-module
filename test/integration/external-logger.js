@@ -1,6 +1,8 @@
-const assert = require("assert");
-const config = require("../../common.js");
-const ipc = require('node-ipc');
+const assert = require("assert"),
+  config = require("../../common.js"),
+  ipc = require('node-ipc'),
+  simpleMock = require("simple-mock"),
+  mock = simpleMock.mock;
 
 describe("External Logger", ()=>{
   describe("initialization", ()=>{
@@ -10,9 +12,60 @@ describe("External Logger", ()=>{
     });
   });
 
+  describe("message configuration for LM", ()=>{
+    beforeEach(()=>{
+      externalLogger = require('../../external-logger')("projectName", "datasetName", "testFile");
+      spy = mock(log, 'error');
+    });
+
+    afterEach(()=>{
+      simpleMock.restore();
+    });
+
+    it("should not send message to LM and log error if message.from is null", ()=>{
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "");
+      assert.deepEqual(spy.lastCall.arg, "From is required");
+    });
+
+    it("should not send message to LM and log error if message.data.table is null", ()=>{
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "", "testFrom");
+      assert.deepEqual(spy.lastCall.arg, "BQ table is required");
+    });
+
+    it("should not send message to LM and log error if message.data.detail is null", ()=>{
+      externalLogger.log("testEvent", {}, "testTable", "testFrom");
+      assert.deepEqual(spy.lastCall.arg, "BQ detail is required");
+    });
+
+    it("should not send message to LM and log error if message.data.event is null", ()=>{
+      externalLogger.log("", {"detail": "testDetail"}, "testTable", "testFrom");
+      assert.deepEqual(spy.lastCall.arg, "BQ event is required");
+    });
+
+    it("should not send message to LM and log error if message.data.projectName is null", ()=>{
+      const externalLogger = require('../../external-logger')("", "datasetName", "testFile");
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
+      assert.deepEqual(spy.lastCall.arg, "BQ project name is required");
+    });
+
+    it("should not send message to LM and log error if message.data.datasetName is null", ()=>{
+      const externalLogger = require('../../external-logger')("projectName", "", "testFile");
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
+      assert.deepEqual(spy.lastCall.arg, "BQ dataset name is required");
+    });
+
+    it("should not send message to LM and log error if message.data.failedEntryFile is null", ()=>{
+      const externalLogger = require('../../external-logger')("projectName", "datasetName", "");
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
+      assert.deepEqual(spy.lastCall.arg, "BQ failed entry file is required");
+    });
+  });
+
   describe("LMS", ()=>{
     describe("connect", ()=>{
       beforeEach((done)=>{
+        externalLogger = require('../../external-logger')("projectName", "datasetName", "testFile");
+        
         ipc.config.id   = "lms";
         let doneCalled = false;
         ipc.serve( () => {
@@ -42,8 +95,6 @@ describe("External Logger", ()=>{
       });
 
       it("should broadcast log message to ms for logging module", (done)=>{
-        const externalLogger = require('../../external-logger')("projectName", "databaseName", "testFile");
-
         ipc.config.id   = "broadcastReceiver";
         ipc.connectTo(
             'lms',
@@ -59,7 +110,7 @@ describe("External Logger", ()=>{
                               from: 'testFrom',
                               data: {
                                 'projectName': 'projectName',
-                                'datasetName': 'databaseName',
+                                'datasetName': 'datasetName',
                                 'failedEntryFile': 'testFile',
                                 'table': 'testTable',
                                 'data': {
@@ -76,6 +127,7 @@ describe("External Logger", ()=>{
                 );
             }
         );
+
         externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
       });
     });
