@@ -15,7 +15,7 @@ describe("External Logger", ()=>{
   describe("message configuration for LM", ()=>{
     beforeEach(()=>{
       externalLogger = require('../../external-logger')("projectName", "datasetName", "testFile");
-      spy = mock(log, 'error');
+      spy = mock(log, 'debug');
     });
 
     afterEach(()=>{
@@ -65,7 +65,7 @@ describe("External Logger", ()=>{
     describe("connect", ()=>{
       beforeEach((done)=>{
         externalLogger = require('../../external-logger')("projectName", "datasetName", "testFile");
-        
+
         ipc.config.id   = "lms";
         let doneCalled = false;
         ipc.serve( () => {

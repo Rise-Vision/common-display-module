@@ -59,7 +59,7 @@ module.exports = (projectName, dataSetName, failedEntryFile)=>{
         // using LM, in common.js
         config.broadcastMessage(message);
       } else {
-        log.error(messageError);
+        log.debug(messageError);
         return;
       }
     }
