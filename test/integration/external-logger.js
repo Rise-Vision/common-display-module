@@ -24,40 +24,40 @@ describe("External Logger", ()=>{
 
     it("should not send message to LM and log error if message.from is null", ()=>{
       externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "");
-      assert.deepEqual(spy.lastCall.arg, "From is required");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - source module undefined: From is required");
     });
 
     it("should not send message to LM and log error if message.data.table is null", ()=>{
-      externalLogger.log("testEvent", {"detail": "testDetail"}, "", "testFrom");
-      assert.deepEqual(spy.lastCall.arg, "BQ table is required");
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "", "integrationTest");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ table is required");
     });
 
     it("should not send message to LM and log error if message.data.detail is null", ()=>{
-      externalLogger.log("testEvent", {}, "testTable", "testFrom");
-      assert.deepEqual(spy.lastCall.arg, "BQ detail is required");
+      externalLogger.log("testEvent", {}, "testTable", "integrationTest");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ detail is required");
     });
 
     it("should not send message to LM and log error if message.data.event is null", ()=>{
-      externalLogger.log("", {"detail": "testDetail"}, "testTable", "testFrom");
-      assert.deepEqual(spy.lastCall.arg, "BQ event is required");
+      externalLogger.log("", {"detail": "testDetail"}, "testTable", "integrationTest");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ event is required");
     });
 
     it("should not send message to LM and log error if message.data.projectName is null", ()=>{
       const externalLogger = require('../../external-logger')("", "datasetName", "testFile");
-      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
-      assert.deepEqual(spy.lastCall.arg, "BQ project name is required");
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "integrationTest");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ project name is required");
     });
 
     it("should not send message to LM and log error if message.data.datasetName is null", ()=>{
       const externalLogger = require('../../external-logger')("projectName", "", "testFile");
-      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
-      assert.deepEqual(spy.lastCall.arg, "BQ dataset name is required");
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "integrationTest");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ dataset name is required");
     });
 
     it("should not send message to LM and log error if message.data.failedEntryFile is null", ()=>{
       const externalLogger = require('../../external-logger')("projectName", "datasetName", "");
-      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
-      assert.deepEqual(spy.lastCall.arg, "BQ failed entry file is required");
+      externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "integrationTest");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ failed entry file is required");
     });
   });
 

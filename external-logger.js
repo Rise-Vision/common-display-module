@@ -59,7 +59,7 @@ module.exports = (projectName, dataSetName, failedEntryFile)=>{
         // using LM, in common.js
         config.broadcastMessage(message);
       } else {
-        log.debug(messageError);
+        log.debug(`external-logger error - ${from || "source module undefined"}: ${messageError}`);
         return;
       }
     }
