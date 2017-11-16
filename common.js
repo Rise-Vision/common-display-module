@@ -1,5 +1,6 @@
 const path = require("path");
 const {platform} = require("rise-common-electron");
+const portedPlatform = require("./platform")
 const EventEmitter = require('events');
 global.log = global.log || {error:console.log,debug:console.log};
 let lmsClient = null, ipcConnection = null;
@@ -12,7 +13,7 @@ function getDisplaySettingsFileName() {
 function connect(id) {
   if (ipcConnection) {
     return ipcConnection;
-  }     
+  }
   ipcConnection = new Promise((resolve)=>{
     if (lmsClient) {
       resolve(lmsClient);
@@ -55,7 +56,7 @@ function connect(id) {
                       ipc.log('disconnected from lms');
                   }
               );
-            
+
               ipc.of.lms.on(
                   'error',
                   function(){
@@ -232,4 +233,5 @@ module.exports = {
     const filePath = path.join(module.exports.getInstallDir(version), fileName);
     return platform.writeTextFileSync(filePath, data);
   },
+  platform: portedPlatform,
 };
