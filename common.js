@@ -23,14 +23,19 @@ function connect(id) {
 
       ipc.connectTo(
           'lms',
-          function(){
+          () => {
               ipc.of.lms.on(
                   'connect',
-                  function(){
-                      ipc.log('## connected to lms ##', ipc.config.delay);
+                  () => {
+                      ipc.log('## connected to lms ##', ipc.config.id);
+                      ipc.of.lms.emit("connected", {client: ipc.config.id});
+
                       lmsClient = {
                         broadcastMessage: (message) => {
-                          ipc.of.lms.emit('message', message)
+                          ipc.of.lms.emit('message', message);
+                        },
+                        getClientList: () => {
+                          ipc.of.lms.emit("clientlist-request");
                         },
                         toMessagingService: (message) => {
                           ipc.of.lms.emit("message", Object.assign({}, message, {through: "ms"}));
@@ -79,6 +84,12 @@ function disconnect() {
 function broadcastMessage(message) {
   connect(message.from).then((client)=>{
     client.broadcastMessage(message);
+  });
+}
+
+function getClientList(id) {
+  connect(id).then((client)=>{
+    client.getClientList();
   });
 }
 
@@ -216,6 +227,7 @@ module.exports = {
   connect,
   disconnect,
   broadcastMessage,
+  getClientList,
   sendToMessagingService,
   receiveMessages,
   moduleIsBackgroundTask(name) {

@@ -92,6 +92,14 @@ describe("Config", ()=>{
               );
             });
 
+            ipc.server.on( "clientlist-request", (data, socket) => {
+              ipc.server.emit(
+                socket,
+                "message",
+                {topic: "client-list", clients: ["client1", "client2"]}
+              );
+            });
+
             ipc.server.on("socket.disconnected", (socket, destroyedSocketID) => {
               ipc.log(`client ${destroyedSocketID} has disconnected!`);
             });
@@ -110,7 +118,19 @@ describe("Config", ()=>{
         assert.notEqual(config.connect(), null);
       });
 
-      it("should broadcast meassage ", (done)=>{
+      it("should emit 'connected' upon connection", (done)=>{
+        const connectedHandler = (data) => {
+          assert.deepEqual(data, {client: "broadcaster"});
+          ipc.server.off("connected", connectedHandler);
+          done();
+        };
+
+        ipc.server.on( "connected", connectedHandler);
+
+        config.connect("broadcaster");
+      });
+
+      it("should broadcast message ", (done)=>{
         ipc.config.id   = "broadcastReceiver";
         ipc.connectTo(
             'lms',
@@ -132,7 +152,7 @@ describe("Config", ()=>{
         config.broadcastMessage({from: "broadcaster", topic: "message1"});
       });
 
-      it("should broadcast meassage to ms ", (done)=>{
+      it("should broadcast message to ms ", (done)=>{
         ipc.config.id   = "broadcastReceiver";
         ipc.connectTo(
             'lms',
@@ -143,7 +163,6 @@ describe("Config", ()=>{
                       ipc.of.lms.on(
                           'message',
                           function(message){
-                            console.log(message);
                             assert.deepEqual(message, {through: "ms", from: "broadcaster", topic: "watch", data:{}});
                             done();
                           }
@@ -177,7 +196,18 @@ describe("Config", ()=>{
         );
       });
 
-      it("should broadcast meassage even though there is a disconnection", (done)=>{
+      it("should get the client list from receiving message with topic 'client-list'", (done)=>{
+        config.receiveMessages("broadcaster")
+          .then((receiver)=>{
+            receiver.on("message", (message) => {
+              assert.deepEqual(message, {topic: "client-list", clients: ["client1", "client2"]});
+              done();
+            });
+          })
+          .then(config.getClientList("broadcaster"));
+      });
+
+      it("should broadcast message even though there is a disconnection", (done)=>{
         ipc.server.stop();
         ipc.config.id   = "broadcastReceiver2";
         ipc.connectTo(
