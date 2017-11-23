@@ -54,7 +54,7 @@ describe("Config", ()=>{
     assert.equal(displaySettingsPath, "root/RiseDisplayNetworkII.ini");
   });
 
-  it("returns proxy agent when HTTP_PROXY and HTTPS_PROXY are set", ()=>{
+  it("returns proxy agents when HTTP_PROXY and HTTPS_PROXY are set", ()=>{
     mock(process.env, 'HTTP_PROXY', 'http://localhost:9191');
     mock(process.env, 'HTTPS_PROXY', 'http://localhost:9191');
 
@@ -67,7 +67,7 @@ describe("Config", ()=>{
     assert(agents.httpsAgent instanceof HttpsProxyAgent)
   });
 
-  it("does not return proxy agent when HTTPS_PROXY is empty", ()=>{
+  it("does not return proxy agents when HTTP_PROXY / HTTPS_PROXY are empty", ()=>{
     mock(process.env, 'HTTP_PROXY', '');
     mock(process.env, 'HTTPS_PROXY', '');
 
@@ -78,7 +78,7 @@ describe("Config", ()=>{
     assert(!agents.httpsAgent);
   });
 
-  it("does not return proxy agent when HTTPS_PROXY is not provided", ()=>{
+  it("does not return proxy agents when HTTP_PROXY / HTTPS_PROXY are not provided", ()=>{
     const agents = common.getProxyAgents();
 
     assert(agents);
