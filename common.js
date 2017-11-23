@@ -2,6 +2,7 @@ const path = require("path");
 const {platform} = require("rise-common-electron");
 const portedPlatform = require("./platform")
 const EventEmitter = require('events');
+const ProxyAgent = require("proxy-agent")
 global.log = global.log || {error:console.log,debug:console.log};
 let lmsClient = null, ipcConnection = null;
 const ipc = require('node-ipc');
@@ -153,6 +154,12 @@ function getMachineIdPath() {
   return path.join(module.exports.getInstallDir(), "machineid");
 }
 
+function getProxyAgent() {
+  const proxyUri = process.env.HTTPS_PROXY;
+
+  return proxyUri ? new ProxyAgent(proxyUri) : null;
+}
+
 module.exports = {
   getMachineIdPath,
   getMachineId() {
@@ -230,6 +237,7 @@ module.exports = {
   getClientList,
   sendToMessagingService,
   receiveMessages,
+  getProxyAgent,
   moduleIsBackgroundTask(name) {
     return module.exports.getModulePackage(name).backgroundTask;
   },
