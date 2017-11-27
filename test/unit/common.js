@@ -1,5 +1,7 @@
 const assert = require("assert"),
 simpleMock = require("simple-mock"),
+HttpProxyAgent = require("proxy-agent"),
+HttpsProxyAgent = require("https-proxy-agent"),
 {join: pathJoin} = require("path"),
 mock = simpleMock.mock,
 platform = require("rise-common-electron").platform,
@@ -50,6 +52,38 @@ describe("Config", ()=>{
     mock(common, "getInstallDir").returnWith("root");
     displaySettingsPath = common.getDisplaySettingsPath();
     assert.equal(displaySettingsPath, "root/RiseDisplayNetworkII.ini");
+  });
+
+  it("returns proxy agents when HTTP_PROXY and HTTPS_PROXY are set", ()=>{
+    mock(process.env, 'HTTP_PROXY', 'http://localhost:9191');
+    mock(process.env, 'HTTPS_PROXY', 'http://localhost:9191');
+
+    const agents = common.getProxyAgents();
+
+    assert(agents);
+    assert(agents.httpAgent);
+    assert(agents.httpsAgent);
+    assert(agents.httpAgent instanceof HttpProxyAgent)
+    assert(agents.httpsAgent instanceof HttpsProxyAgent)
+  });
+
+  it("does not return proxy agents when HTTP_PROXY / HTTPS_PROXY are empty", ()=>{
+    mock(process.env, 'HTTP_PROXY', '');
+    mock(process.env, 'HTTPS_PROXY', '');
+
+    const agents = common.getProxyAgents();
+
+    assert(agents);
+    assert(!agents.httpAgent);
+    assert(!agents.httpsAgent);
+  });
+
+  it("does not return proxy agents when HTTP_PROXY / HTTPS_PROXY are not provided", ()=>{
+    const agents = common.getProxyAgents();
+
+    assert(agents);
+    assert(!agents.httpAgent);
+    assert(!agents.httpsAgent);
   });
 
 });
