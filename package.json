@@ -1,6 +1,6 @@
 {
   "name": "common-display-module",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "",
   "main": "common.js",
   "author": "Rise Vision",
@@ -25,8 +25,8 @@
     "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.1.2"
   },
   "scripts": {
-    "test-no-coverage": "mocha --recursive test/unit",
-    "test": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive test/unit",
-    "integration": "mocha -t 10000 test/integration"
+    "test-unit": "mocha --recursive test/unit",
+    "test": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive test/**/*",
+    "test-integration": "mocha -t 10000 test/integration"
   }
 }

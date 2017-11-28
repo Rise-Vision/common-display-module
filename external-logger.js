@@ -1,5 +1,7 @@
 const config = require("./common");
 
+let displaySettings = {};
+
 /**
  * Validates LM message against BQ entry standards
  * @param {object} message - event required for BQ logging
@@ -42,7 +44,15 @@ module.exports = (projectName, dataSetName, failedEntryFile)=>{
      * @param {string} from - from what module
      */
     log (evt, detail, table, from) {
-      let message = {
+      const displayId = displaySettings.displayid || displaySettings.tempdisplayid || detail.display_id;
+
+      if (!displayId) {
+        throw new Error("Display ID not provided");
+      }
+
+      const data = Object.assign({}, {"event": evt, "display_id": displayId}, detail);
+
+      const message = {
         "topic": "log",
         "from": from,
         "data": {
@@ -50,18 +60,21 @@ module.exports = (projectName, dataSetName, failedEntryFile)=>{
           "datasetName": dataSetName,
           "failedEntryFile": failedEntryFile,
           "table": table,
-          "data": Object.assign({"event": evt}, detail)
+          "data": data
         },
-      }
+      };
 
       let messageError = validateMessage(message, detail);
       if(!messageError) {
         // using LM, in common.js
         config.broadcastMessage(message);
       } else {
-        log.debug(`external-logger error - ${from || "source module undefined"}: ${messageError}`);
+        console.log(`external-logger error - ${from || "source module undefined"}: ${messageError}`);
         return;
       }
+    },
+    setDisplaySettings(settings) {
+      displaySettings = settings;
     }
   }
 };
