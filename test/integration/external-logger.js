@@ -9,13 +9,15 @@ describe("External Logger", ()=>{
     it("should create an instance of external-logger with a log function", ()=>{
       const externalLogger = require('../../external-logger')("A", "B", "C");
       assert.deepEqual(externalLogger.hasOwnProperty("log"), true);
+      assert(externalLogger.hasOwnProperty("setDisplaySettings"));
     });
   });
 
   describe("message configuration for LM", ()=>{
     beforeEach(()=>{
       externalLogger = require('../../external-logger')("projectName", "datasetName", "testFile");
-      spy = mock(log, 'debug');
+      externalLogger.setDisplaySettings({displayid: "abc123"});
+      spy = mock(console, 'log');
     });
 
     afterEach(()=>{
@@ -115,7 +117,8 @@ describe("External Logger", ()=>{
                                 'table': 'testTable',
                                 'data': {
                                   'event': 'testEvent',
-                                  'detail': 'testDetail'
+                                  "event_details": "test-details",
+                                  "display_id": "abc123"
                                 }
                               }
                             };
@@ -128,7 +131,7 @@ describe("External Logger", ()=>{
             }
         );
 
-        externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "testFrom");
+        externalLogger.log("testEvent", {"event_details": "test-details"}, "testTable", "testFrom");
       });
     });
   });
