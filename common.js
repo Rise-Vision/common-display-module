@@ -169,6 +169,20 @@ function getProxyAgents() {
   return agents;
 }
 
+function getDisplayId() {
+  return new Promise((res) => {
+    module.exports.getDisplaySettings()
+      .then(settings=>{
+        if (!settings.displayid) {
+          const tempDisplayId = "0." + module.exports.getMachineId();
+          res(tempDisplayId);
+        }
+
+        res(settings.displayid);
+      })
+  });
+}
+
 module.exports = {
   getMachineIdPath,
   getMachineId() {
@@ -193,6 +207,7 @@ module.exports = {
     return path.join(module.exports.getInstallDir(), "RiseDisplayNetworkII.ini");
   },
   getDisplaySettingsSync,
+  getDisplayId,
   getInstallDir,
   getScriptDir() {
     return path.join(module.exports.getInstallDir(), "scripts");
