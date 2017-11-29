@@ -86,4 +86,22 @@ describe("Config", ()=>{
     assert(!agents.httpsAgent);
   });
 
+  it("should provide display id when display id is read from file", () => {
+    mock(platform, "readTextFile").resolveWith("displayid=abc123");
+    return common.getDisplayId()
+      .then((displayId)=>{
+        assert.equal(displayId, "abc123");
+      })
+      .catch(assert.fail);
+  });
+
+  it("should provide display id from a temp created one", () => {
+    mock(platform, "readTextFile").resolveWith("text=test");
+    return common.getDisplayId()
+      .then((displayId)=>{
+        assert(displayId);
+      })
+      .catch(assert.fail);
+  });
+
 });
