@@ -104,4 +104,17 @@ describe("Config", ()=>{
       .catch(assert.fail);
   });
 
+  it("should provide latest version in manifest", () => {
+    const mockLocalManifest = {
+      "player-electron":{"version":"2017.11.20.15.52"},
+      "launcher":{"version":"2017.11.20.23.14"},
+      "local-messaging":{"version":"2017.11.17.22.12"},
+      "local-storage":{"version":"test"},
+      "logging": {}
+    };
+    mock(common, "getManifest").returnWith(mockLocalManifest);
+
+    assert.equal(common.getLatestVersionInManifest(), "2017.11.20.23.14");
+  });
+
 });
