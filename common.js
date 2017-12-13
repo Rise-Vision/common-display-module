@@ -183,6 +183,21 @@ function getDisplayId() {
   });
 }
 
+function getLatestVersionInManifest() {
+  const manifest = module.exports.getManifest();
+
+  try {
+    const latestModule = Object.keys(manifest)
+      .filter(mod => manifest[mod].version && manifest[mod].version.startsWith("20"))
+      .reduce((a, b) => { return manifest[a].version > manifest[b].version ? a : b });
+
+    return manifest[latestModule].version;
+  } catch(err) {
+    console.log(err);
+    return "";
+  }
+}
+
 module.exports = {
   getMachineIdPath,
   getMachineId() {
@@ -255,6 +270,7 @@ module.exports = {
       return {};
     }
   },
+  getLatestVersionInManifest,
   connect,
   disconnect,
   broadcastMessage,
