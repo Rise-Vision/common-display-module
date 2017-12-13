@@ -193,7 +193,7 @@ function getLatestVersionInManifest() {
 
     return manifest[latestModule].version;
   } catch(err) {
-    console.log(err);
+    log.debug(err.message);
     return "";
   }
 }
