@@ -11,7 +11,7 @@ describe("UpdateModuleVersion", ()=>{
 
   describe("when not all params are present", ()=> {
     beforeEach(()=>{
-      platform.writeTextFileSync(config.getManifestPath(), `{"rolloutPct": 10, "modules": [{"name": "test","version": "2017.10.12.04.45"}]}`);
+      platform.writeTextFileSync(config.getManifestPath(), `{"rolloutPct": 10, "modules": [{"name": "test","version": "2017.10.12.04.45", "url":"https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.12.04.45/test-lnx-32.sh"}]}`);
     });
     afterEach(()=>{
       fs.unlinkSync(config.getManifestPath());
@@ -19,21 +19,21 @@ describe("UpdateModuleVersion", ()=>{
 
     it("does not update manifest if module name empty", (done) => {
       execFile("node", [filePath, config.getManifestPath(), "", "2017.10.13.21.21", 25], () => {
-        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.12.04.45"}]});
+        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.12.04.45", url: "https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.12.04.45/test-lnx-32.sh"}]});
         done();
       });
     });
 
     it("does not update manifest if version is empty", (done) => {
       execFile("node", [filePath, config.getManifestPath(), "test", "", 25], () => {
-        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.12.04.45"}]});
+        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.12.04.45", url: "https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.12.04.45/test-lnx-32.sh"}]});
         done();
       });
     });
 
     it("updates manifest when pct is not present", (done)=>{
       execFile("node", [filePath, config.getManifestPath(), "test", "2017.10.13.21.21"], (error) => {
-        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.13.21.21"}]});
+        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.13.21.21", url: "https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.13.21.21/test-lnx-32.sh"}]});
         done();
       });
 
@@ -43,7 +43,7 @@ describe("UpdateModuleVersion", ()=>{
   describe("when all params are present", ()=>{
 
     beforeEach(()=>{
-      platform.writeTextFileSync(config.getManifestPath(), `{"rolloutPct": 10, "modules": [{"name": "test","version": "2017.10.12.04.45"}]}`);
+      platform.writeTextFileSync(config.getManifestPath(), `{"rolloutPct": 10, "modules": [{"name": "test", "version": "2017.10.12.04.45", "url":"https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.12.04.45/test-lnx-32.sh"}]}`);
     });
     afterEach(()=>{
       fs.unlinkSync(config.getManifestPath());
@@ -52,7 +52,7 @@ describe("UpdateModuleVersion", ()=>{
     it("updates module manifeset", (done)=>{
       execFile("node", [filePath, config.getManifestPath(), "test", "2017.10.13.21.21", 25], (error) => {
         console.log(error);
-        assert.deepEqual(config.getManifest(), {rolloutPct: 25, modules: [{name: "test",version: "2017.10.13.21.21"}]});
+        assert.deepEqual(config.getManifest(), {rolloutPct: 25, modules: [{name: "test",version: "2017.10.13.21.21", url: "https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.13.21.21/test-lnx-32.sh"}]});
         done();
       });
 
@@ -60,14 +60,25 @@ describe("UpdateModuleVersion", ()=>{
 
     it("does not update manifest if version doesn't start with 2", (done) => {
       execFile("node", [filePath, config.getManifestPath(), "test", "1.0.1", 25], () => {
-        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.12.04.45"}]});
+        assert.deepEqual(config.getManifest(), {rolloutPct: 10, modules: [{name: "test",version: "2017.10.12.04.45", url: "https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.12.04.45/test-lnx-32.sh"}]});
         done();
       });
     });
 
     it("does not update specific module version if module name doesn't match", (done) => {
       execFile("node", [filePath, config.getManifestPath(), "testabc", "2017.10.13.21.21", 25], () => {
-        assert.deepEqual(config.getManifest(), {rolloutPct: 25, modules: [{name: "test",version: "2017.10.12.04.45"}]});
+        assert.deepEqual(config.getManifest(), {rolloutPct: 25, modules: [{name: "test",version: "2017.10.12.04.45", url: "https://storage.googleapis.com/install-versions.risevision.com/releases/test/2017.10.12.04.45/test-lnx-32.sh"}]});
+        done();
+      });
+    });
+
+    it("does not update url value if modifying a stable manifest", (done) => {
+      fs.unlinkSync(config.getManifestPath());
+      platform.writeTextFileSync(config.getManifestPath(), `{"rolloutPct": 10, "modules": [{"name": "test", "version": "2017.10.12.04.45", "url":"https://storage.googleapis.com/install-versions.risevision.com/test-lnx-32.sh"}]}`);
+
+      execFile("node", [filePath, config.getManifestPath(), "test", "2017.10.13.21.21", 25], (error) => {
+        console.log(error);
+        assert.deepEqual(config.getManifest(), {rolloutPct: 25, modules: [{name: "test",version: "2017.10.13.21.21", url: "https://storage.googleapis.com/install-versions.risevision.com/test-lnx-32.sh"}]});
         done();
       });
     });
