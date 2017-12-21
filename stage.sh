@@ -3,7 +3,7 @@ VERSION=$(date +%Y.%m.%d.%H.%M)
 echo "staging $VERSION"
 echo "$VERSION" >version
 
-if [ "$MODULENAME" = "" ]; exit 1; fi
+if [ "$MODULENAME" = "" ]; then exit 1; fi
 
 git clone git@github.com:Rise-Vision/private-keys.git
 gcloud auth activate-service-account 452091732215@developer.gserviceaccount.com --key-file ./private-keys/storage-server/rva-media-library-ce0d2bd78b54.json
