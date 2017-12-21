@@ -22,6 +22,7 @@ function connect(id) {
     } else {
       ipc.config.id   = id;
       ipc.config.retry= 1500;
+      ipc.config.silent = !process.argv.includes("--debug");
 
       ipc.connectTo(
           'lms',
