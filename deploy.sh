@@ -23,3 +23,12 @@ gsutil setmeta -h "Content-Disposition:attachment" gs://install-versions.risevis
 gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
 gsutil -m cp -p gs://install-versions.risevision.com/${OUTPUTDIR}*.{sh,exe,json} gs://install-versions.risevision.com/backups/$VERSION
 gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/$OUTPUTDIR
+
+if [ $BRANCH == "STABLE" ]
+then
+  echo -n "RisePlayerElectron $VERSION" > latest-version
+  gsutil cp latest-version gs://install-versions.risevision.com
+  gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/latest-version
+  gsutil setmeta -h "Content-Type:text/plain" gs://install-versions.risevision.com/latest-version
+  gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/latest-version
+fi
