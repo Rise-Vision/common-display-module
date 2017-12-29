@@ -31,7 +31,7 @@ function connect(id) {
                   'connect',
                   () => {
                       ipc.log('## connected to lms ##', ipc.config.id);
-                      ipc.of.lms.emit("connected", {client: ipc.config.id});
+                      ipc.of.lms.emit("connected", {id: ipc.config.id, client: ipc.config.id});
 
                       lmsClient = {
                         broadcastMessage: (message) => {

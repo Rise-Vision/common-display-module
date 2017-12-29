@@ -120,7 +120,7 @@ describe("Config", ()=>{
 
       it("should emit 'connected' upon connection", (done)=>{
         const connectedHandler = (data) => {
-          assert.deepEqual(data, {client: "broadcaster"});
+          assert.deepEqual(data, {id: "broadcaster", client: "broadcaster"});
           ipc.server.off("connected", connectedHandler);
           done();
         };
