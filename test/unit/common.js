@@ -1,15 +1,17 @@
-const assert = require("assert"),
-simpleMock = require("simple-mock"),
-HttpProxyAgent = require("proxy-agent"),
-HttpsProxyAgent = require("https-proxy-agent"),
-{join: pathJoin} = require("path"),
-mock = simpleMock.mock,
-platform = require("rise-common-electron").platform,
-common = require("../../common.js");
+const assert = require("assert");
+const simpleMock = require("simple-mock");
+const HttpProxyAgent = require("proxy-agent");
+const HttpsProxyAgent = require("https-proxy-agent");
+const {join: pathJoin} = require("path");
+const mock = simpleMock.mock;
+const mockfs = require("mock-fs");
+const platform = require("rise-common-electron").platform;
+const common = require("../../common.js");
 
 describe("Config", ()=>{
   afterEach(()=>{
     simpleMock.restore();
+    mockfs.restore();
   });
 
   it("gets display settings synchronously", ()=>{
@@ -115,6 +117,26 @@ describe("Config", ()=>{
     mock(common, "getManifest").returnWith(mockLocalManifest);
 
     assert.equal(common.getLatestVersionInManifest(), "2017.11.20.23.14");
+  });
+
+  it("should return true if BETA file exists", ()=>{
+    mock(common, "getModuleVersion").returnWith("test");
+
+    mockfs({
+      [`${platform.getHomeDir()}/rvplayer/modules/launcher/test/Installer/`]: {
+        "BETA": ""
+      }});
+
+      assert(common.isBetaLauncher());
+  });
+
+  it("should return false if BETA file does not exist", ()=>{
+    mock(common, "getModuleVersion").returnWith("test");
+
+    mockfs({
+      [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
+
+      assert(!common.isBetaLauncher());
   });
 
 });
