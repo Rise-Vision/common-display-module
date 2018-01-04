@@ -297,6 +297,6 @@ module.exports = {
   platform: portedPlatform,
   isBetaLauncher() {
     const betaPath = path.join(module.exports.getModulePath("launcher"), "Installer", "BETA");
-    return Promise.resolve(platform.fileExists(betaPath));
+    return platform.fileExists(betaPath);
   }
 };

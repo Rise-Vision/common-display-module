@@ -127,10 +127,7 @@ describe("Config", ()=>{
         "BETA": ""
       }});
 
-    return common.isBetaLauncher()
-      .then((isBeta)=>{
-        assert(isBeta);
-      });
+      assert(common.isBetaLauncher());
   });
 
   it("should return false if BETA file does not exist", ()=>{
@@ -139,10 +136,7 @@ describe("Config", ()=>{
     mockfs({
       [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
 
-    return common.isBetaLauncher()
-      .then((isBeta)=>{
-        assert(!isBeta);
-      });
+      assert(!common.isBetaLauncher());
   });
 
 });
