@@ -295,4 +295,8 @@ module.exports = {
     return platform.writeTextFileSync(filePath, data);
   },
   platform: portedPlatform,
+  isBetaLauncher() {
+    const betaPath = path.join(module.exports.getModulePath("launcher"), "Installer", "BETA");
+    return Promise.resolve(platform.fileExists(betaPath));
+  }
 };
