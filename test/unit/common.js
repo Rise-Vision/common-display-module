@@ -11,6 +11,7 @@ const common = require("../../common.js");
 describe("Config", ()=>{
   afterEach(()=>{
     simpleMock.restore();
+    mockfs.restore();
   });
 
   it("gets display settings synchronously", ()=>{
