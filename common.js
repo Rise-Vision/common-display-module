@@ -35,6 +35,7 @@ function connect(id) {
 
                       lmsClient = {
                         broadcastMessage: (message) => {
+                          ipc.log('sending message from lms : ', message);
                           ipc.of.lms.emit('message', message);
                         },
                         getClientList: () => {
@@ -48,7 +49,6 @@ function connect(id) {
                           ipc.of.lms.on(
                               'message',
                               function(message){
-                                  ipc.log('got a message from lms : ', message);
                                   receiver.emit("message",message);
                               }
                           );
