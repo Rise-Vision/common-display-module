@@ -3,7 +3,7 @@ const common = require("./common");
 const MINUTES = 60000;
 const DEFAULT_HEARTBEAT_INTERVAL = 4;
 
-let timerId = null
+let timerId = null;
 
 // Can be set via environment variable HEARBEAT_INTERVAL, which is useful for testing purposes.
 // Should not be set to more than the WATCH_INTERVAL in watchdog-module.
@@ -15,7 +15,7 @@ function getHeartbeatInterval() {
 
 function startHearbeatInterval(moduleName, schedule = setInterval) {
   // safety catch, stop any previous execution.
-  stop()
+  stop();
 
   const interval = getHeartbeatInterval();
   const message = {from: moduleName, topic: "heartbeat"};
@@ -25,9 +25,9 @@ function startHearbeatInterval(moduleName, schedule = setInterval) {
 
 function stop() {
   if (timerId) {
-    clearInterval(timerId)
+    clearInterval(timerId);
 
-    timerId = null
+    timerId = null;
   }
 }
 
