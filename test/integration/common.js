@@ -3,10 +3,13 @@ const fs = require("fs");
 const {join: pathJoin} = require("path");
 const platform = require("rise-common-electron").platform;
 const config = require("../../common.js");
+const heartbeat = require("../../heartbeat");
 const ipc = require('node-ipc');
 
 
 describe("Config", ()=>{
+  afterEach(() => heartbeat.stop());
+
   describe("when local module manifest is not present", ()=>{
     beforeEach(()=>{
       try {

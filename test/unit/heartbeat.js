@@ -7,12 +7,14 @@ const heartbeat = require("../../heartbeat");
 describe("Heartbeat - Unit", ()=>
 {
 
-  beforeEach(()=>
-  {
+  beforeEach(() => {
     simple.mock(common, "broadcastMessage").returnWith();
   });
 
-  afterEach(()=> simple.restore());
+  afterEach(()=> {
+    simple.restore()
+    heartbeat.setBroadcastAction(null);
+  });
 
   it("should schedule heartbeat events", () => {
     heartbeat.startHearbeatInterval("test-module", (action, interval) => {
@@ -26,6 +28,22 @@ describe("Heartbeat - Unit", ()=>
 
       assert.equal(event.from, "test-module");
       assert.equal(event.topic, "heartbeat");
+    })
+  });
+
+  it("should let change the broadcast action", done => {
+    heartbeat.setBroadcastAction(message =>
+    {
+      assert.equal(message.from, "test-module");
+      assert.equal(message.topic, "heartbeat");
+
+      done();
+    });
+
+    heartbeat.startHearbeatInterval("test-module", (action, interval) => {
+      assert.equal(interval, 240000);
+
+      action();
     })
   });
 
