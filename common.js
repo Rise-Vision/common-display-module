@@ -43,6 +43,9 @@ function connect(id) {
                         toMessagingService: (message) => {
                           ipc.of.lms.emit("message", Object.assign({}, message, {through: "ms"}));
                         },
+                        toLocalWS: (message) => {
+                          ipc.of.lms.emit("message", Object.assign({}, message, {through: "ws"}));
+                        },
                         receiveMessages: () => {
                           let receiver = new EventEmitter();
                           ipc.of.lms.on(
@@ -87,6 +90,12 @@ function disconnect() {
 function broadcastMessage(message) {
   connect(message.from).then((client)=>{
     client.broadcastMessage(message);
+  });
+}
+
+function broadcastToLocalWS(message) {
+  connect(message.from).then((client)=>{
+    client.toLocalWS(message);
   });
 }
 
@@ -275,6 +284,7 @@ module.exports = {
   connect,
   disconnect,
   broadcastMessage,
+  broadcastToLocalWS,
   getClientList,
   sendToMessagingService,
   receiveMessages,

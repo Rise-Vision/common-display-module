@@ -174,6 +174,27 @@ describe("Config", ()=>{
         config.sendToMessagingService({from: "broadcaster", topic: "watch", data:{}});
       });
 
+      it("should broadcast message to ws", (done)=>{
+        ipc.config.id   = "broadcastReceiver";
+        ipc.connectTo(
+          'lms',
+          function(){
+            ipc.of.lms.on(
+              'connect',
+              function(){
+                ipc.of.lms.on(
+                  'message',
+                  function(message){
+                    assert.deepEqual(message, {through: "ws", from: "broadcaster", topic: "FILE-UPDATE", data:{}});
+                    done();
+                  }
+                );
+              }
+            );
+          }
+        );
+        config.broadcastToLocalWS({from: "broadcaster", topic: "FILE-UPDATE", data:{}});
+      });
 
       it("should get the message from receiveMessages", (done)=>{
         config.receiveMessages().then((receiver)=>{
