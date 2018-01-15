@@ -1,5 +1,6 @@
 const path = require("path");
 const {platform} = require("rise-common-electron");
+const heartbeat = require("./heartbeat");
 const portedPlatform = require("./platform");
 const EventEmitter = require('events');
 const HttpProxyAgent = require("proxy-agent");
@@ -100,6 +101,8 @@ function receiveMessages(id) {
   return new Promise((resolve)=>{
     connect(id).then((client)=>{
       resolve(client.receiveMessages());
+
+      heartbeat.startHearbeatInterval(id);
     });
   });
 }

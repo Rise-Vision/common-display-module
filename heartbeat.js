@@ -14,6 +14,11 @@ function getHeartbeatInterval() {
 }
 
 function startHearbeatInterval(moduleName, schedule = setInterval) {
+  // watchdog module does not send heartbeats.
+  if(moduleName === 'watchdog') {
+    return;
+  }
+
   // safety catch, stop any previous execution.
   stop();
 
