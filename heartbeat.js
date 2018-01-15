@@ -5,8 +5,7 @@ const DEFAULT_HEARTBEAT_INTERVAL = 4;
 
 let timerId = null;
 
-const DEFAULT_BROADCAST_ACTION = message =>
-{
+const DEFAULT_BROADCAST_ACTION = message => {
   // nested require to avoid circular dependency problem.
   const common = require("./common");
 

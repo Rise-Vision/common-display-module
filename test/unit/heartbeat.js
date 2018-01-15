@@ -7,8 +7,7 @@ const heartbeat = require("../../heartbeat");
 describe("Heartbeat - Unit", ()=>
 {
 
-  beforeEach(()=>
-  {
+  beforeEach(() => {
     simple.mock(common, "broadcastMessage").returnWith();
   });
 
