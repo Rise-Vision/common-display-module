@@ -18,7 +18,8 @@ Display modules should be downloadable from a publicly available https URL.
 
 ## Heartbeat
 
-Well behaved modules should call:
+A heartbeat loop is called when a module calls receiveMessages(moduleName).
+If that function is not called by a module, modules should explicitly call:
 
 ``` javascript
   heartbeat.startHearbeatInterval(moduleName);
