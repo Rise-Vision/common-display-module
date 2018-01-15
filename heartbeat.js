@@ -1,4 +1,4 @@
-const common = require("./common");
+
 
 const MINUTES = 60000;
 const DEFAULT_HEARTBEAT_INTERVAL = 4;
@@ -18,6 +18,9 @@ function startHearbeatInterval(moduleName, schedule = setInterval) {
   if(moduleName === 'watchdog') {
     return;
   }
+
+  // nested require to avoid circular dependency problem.
+  const common = require("./common");
 
   // safety catch, stop any previous execution.
   stop();
