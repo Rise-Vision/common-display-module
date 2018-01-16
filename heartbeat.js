@@ -18,10 +18,10 @@ function setBroadcastAction(action) {
   broadcastAction = action ? action : DEFAULT_BROADCAST_ACTION;
 }
 
-// Can be set via environment variable HEARBEAT_INTERVAL, which is useful for testing purposes.
+// Can be set via environment variable HEARTBEAT_INTERVAL, which is useful for testing purposes.
 // Should not be set to more than the WATCH_INTERVAL in watchdog-module.
 function getHeartbeatInterval() {
-  const value = Number(process.env.HEARBEAT_INTERVAL || DEFAULT_HEARTBEAT_INTERVAL);
+  const value = Number(process.env.HEARTBEAT_INTERVAL || DEFAULT_HEARTBEAT_INTERVAL);
 
   return value * MINUTES;
 }
