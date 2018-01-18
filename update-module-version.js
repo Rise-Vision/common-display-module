@@ -5,7 +5,7 @@ const scriptName = path.basename(__filename);
 const filePath = process.argv[2];
 const moduleName = process.argv[3];
 const version = process.argv[4];
-const pct = process.argv[5] ? Number(process.argv[5]) : null;
+const pct = Number(process.argv[5]) ? Number(process.argv[5]) : null;
 const type = process.argv[6] ? process.argv[6] : "module";
 
 if (!filePath || !filePath.endsWith(".json")) {return err();}

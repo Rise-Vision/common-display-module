@@ -2,11 +2,13 @@
 VERSION=$(cat version)
 OUTPUTDIR="beta/"
 MANIFESTFILES="display-modules-beta*.json"
+ROLLOUTPCT="-"
 
 if [ "$MODULENAME" = "" ]; then exit 1; fi
 
 if [ "$BRANCH" = "STABLE" ]; then OUTPUTDIR=""; fi
 if [ "$BRANCH" = "STABLE" ]; then MANIFESTFILES="display-modules-*.json"; fi
+if [ "$BRANCH" = "STABLE" ]; then ROLLOUTPCT="0"; fi
 
 echo "deploying $VERSION"
 echo "deploying to install-versions.risevision.com/$OUTPUTDIR"
@@ -16,7 +18,7 @@ gcloud auth activate-service-account 452091732215@developer.gserviceaccount.com 
 
 mkdir -p manifests
 gsutil -m cp gs://install-versions.risevision.com/${OUTPUTDIR}${MANIFESTFILES} manifests
-find manifests -name "*.json" -exec node ./node_modules/common-display-module/update-module-version.js '{}' $MODULENAME $VERSION 0 \;
+find manifests -name "*.json" -exec node ./node_modules/common-display-module/update-module-version.js '{}' $MODULENAME $VERSION $ROLLOUTPCT \;
 
 gsutil -m cp manifests/*.json gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION
 gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
