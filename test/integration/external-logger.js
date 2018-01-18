@@ -1,8 +1,9 @@
-const assert = require("assert"),
-  config = require("../../common.js"),
-  ipc = require('node-ipc'),
-  simpleMock = require("simple-mock"),
-  mock = simpleMock.mock;
+const assert = require("assert");
+const ipc = require('node-ipc');
+const simpleMock = require("simple-mock");
+
+const messaging = require("../../messaging.js");
+const mock = simpleMock.mock;
 
 describe("External Logger", ()=>{
   describe("initialization", ()=>{
@@ -93,7 +94,7 @@ describe("External Logger", ()=>{
 
       afterEach(()=>{
         ipc.server.stop();
-        config.disconnect();
+        messaging.disconnect();
       });
 
       it("should broadcast log message to ms for logging module", (done)=>{

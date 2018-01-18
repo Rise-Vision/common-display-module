@@ -7,9 +7,9 @@ let timerId = null;
 
 const DEFAULT_BROADCAST_ACTION = message => {
   // nested require to avoid circular dependency problem.
-  const common = require("./common");
+  const messaging = require("./messaging");
 
-  common.broadcastMessage(message);
+  messaging.broadcastMessage(message);
 }
 
 let broadcastAction = DEFAULT_BROADCAST_ACTION;
