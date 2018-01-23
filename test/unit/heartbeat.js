@@ -1,14 +1,14 @@
 const assert = require("assert");
 const simple = require("simple-mock");
 
-const common = require("../../common");
+const messaging = require("../../messaging");
 const heartbeat = require("../../heartbeat");
 
 describe("Heartbeat - Unit", ()=>
 {
 
   beforeEach(() => {
-    simple.mock(common, "broadcastMessage").returnWith();
+    simple.mock(messaging, "broadcastMessage").returnWith();
   });
 
   afterEach(()=> {
@@ -22,9 +22,9 @@ describe("Heartbeat - Unit", ()=>
 
       action();
 
-      assert(common.broadcastMessage.called);
+      assert(messaging.broadcastMessage.called);
 
-      const event = common.broadcastMessage.lastCall.args[0];
+      const event = messaging.broadcastMessage.lastCall.args[0];
 
       assert.equal(event.from, "test-module");
       assert.equal(event.topic, "heartbeat");

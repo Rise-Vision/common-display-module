@@ -1,4 +1,4 @@
-const config = require("./common");
+const messaging = require("./messaging");
 
 let displaySettings = {};
 
@@ -67,7 +67,7 @@ module.exports = (projectName, dataSetName, failedEntryFile)=>{
       let messageError = validateMessage(message, detail);
       if(!messageError) {
         // using LM, in common.js
-        config.broadcastMessage(message);
+         messaging.broadcastMessage(message);
       } else {
         console.log(`external-logger error - ${from || "source module undefined"}: ${messageError}`);
         return;
