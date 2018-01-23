@@ -4,10 +4,10 @@ const assert = require("assert");
 const heartbeat = require("../../heartbeat");
 const messaging = require("../../messaging");
 
-describe("Messaging", ()=>{
+describe("Messaging - Integration", ()=>{
 
     afterEach(() => heartbeat.stop());
-    
+
     describe("connect", ()=>{
       beforeEach((done)=>{
         ipc.config.id   = "lms";

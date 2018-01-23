@@ -81,19 +81,19 @@ function disconnect() {
 }
 
 function broadcastMessage(message) {
-  connect(message.from).then((client)=>{
+  return connect(message.from).then((client)=>{
     client.broadcastMessage(message);
   });
 }
 
 function broadcastToLocalWS(message) {
-  connect(message.from).then((client)=>{
+  return connect(message.from).then((client)=>{
     client.toLocalWS(message);
   });
 }
 
 function getClientList(id) {
-  connect(id).then((client)=>{
+  return connect(id).then((client)=>{
     client.getClientList();
   });
 }
@@ -109,7 +109,7 @@ function receiveMessages(id) {
 }
 
 function sendToMessagingService(message) {
-  connect(message.from).then((client)=>{
+  return connect(message.from).then((client)=>{
     client.toMessagingService(message);
   });
 }
