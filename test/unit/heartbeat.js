@@ -17,7 +17,7 @@ describe("Heartbeat - Unit", ()=>
   });
 
   it("should schedule heartbeat events", () => {
-    heartbeat.startHearbeatInterval("test-module", (action, interval) => {
+    heartbeat.startHeartbeatInterval("test-module", (action, interval) => {
       assert.equal(interval, 240000);
 
       action();
@@ -40,7 +40,7 @@ describe("Heartbeat - Unit", ()=>
       done();
     });
 
-    heartbeat.startHearbeatInterval("test-module", (action, interval) => {
+    heartbeat.startHeartbeatInterval("test-module", (action, interval) => {
       assert.equal(interval, 240000);
 
       action();

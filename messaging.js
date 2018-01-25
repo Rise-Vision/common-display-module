@@ -103,7 +103,7 @@ function receiveMessages(id) {
     connect(id).then((client)=>{
       resolve(client.receiveMessages());
 
-      heartbeat.startHearbeatInterval(id);
+      heartbeat.startHeartbeatInterval(id);
     });
   });
 }

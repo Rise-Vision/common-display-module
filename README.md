@@ -22,7 +22,7 @@ A heartbeat loop is called when a module calls receiveMessages(moduleName).
 If that function is not called by a module, modules should explicitly call:
 
 ``` javascript
-  heartbeat.startHearbeatInterval(moduleName);
+  heartbeat.startHeartbeatInterval(moduleName);
 ```
 
 once they have connected successfully to local-messaging-module.
