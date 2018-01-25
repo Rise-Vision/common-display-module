@@ -18,6 +18,7 @@ describe("Licensing - Unit", () => {
       }
     };
 
+    assert(licensing.containsSubscriptionDataForRisePlayerProfessional(message));
     assert(licensing.isRisePlayerProfessionalSubscriptionActive(message));
   });
 
@@ -35,6 +36,7 @@ describe("Licensing - Unit", () => {
       }
     };
 
+    assert(licensing.containsSubscriptionDataForRisePlayerProfessional(message));
     assert(!licensing.isRisePlayerProfessionalSubscriptionActive(message));
   });
 
@@ -49,6 +51,7 @@ describe("Licensing - Unit", () => {
       }
     };
 
+    assert(!licensing.containsSubscriptionDataForRisePlayerProfessional(message));
     assert(!licensing.isRisePlayerProfessionalSubscriptionActive(message));
   });
 
@@ -59,6 +62,7 @@ describe("Licensing - Unit", () => {
       subscriptions: {}
     };
 
+    assert(!licensing.containsSubscriptionDataForRisePlayerProfessional(message));
     assert(!licensing.isRisePlayerProfessionalSubscriptionActive(message));
   });
 
@@ -76,6 +80,7 @@ describe("Licensing - Unit", () => {
       }
     };
 
+    assert(licensing.containsSubscriptionDataForRiseStorage(message));
     assert(licensing.isRiseStorageSubscriptionActive(message));
   });
 
@@ -93,6 +98,7 @@ describe("Licensing - Unit", () => {
       }
     };
 
+    assert(licensing.containsSubscriptionDataForRiseStorage(message));
     assert(!licensing.isRiseStorageSubscriptionActive(message));
   });
 
@@ -107,6 +113,7 @@ describe("Licensing - Unit", () => {
       }
     };
 
+    assert(!licensing.containsSubscriptionDataForRiseStorage(message));
     assert(!licensing.isRiseStorageSubscriptionActive(message));
   });
 
@@ -117,6 +124,7 @@ describe("Licensing - Unit", () => {
       subscriptions: {}
     };
 
+    assert(!licensing.containsSubscriptionDataForRiseStorage(message));
     assert(!licensing.isRiseStorageSubscriptionActive(message));
   });
 
