@@ -26,7 +26,7 @@ function getHeartbeatInterval() {
   return value * MINUTES;
 }
 
-function startHearbeatInterval(moduleName, schedule = setInterval) {
+function startHeartbeatInterval(moduleName, schedule = setInterval) {
   // watchdog module does not send heartbeats.
   if(moduleName === 'watchdog') {
     return;
@@ -49,4 +49,4 @@ function stop() {
   }
 }
 
-module.exports = {setBroadcastAction, startHearbeatInterval, stop};
+module.exports = {setBroadcastAction, startHeartbeatInterval, stop};
