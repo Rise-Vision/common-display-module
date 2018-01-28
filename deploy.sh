@@ -4,7 +4,7 @@ OUTPUTDIR="beta/"
 MANIFESTFILES="display-modules-beta*.json"
 ROLLOUTPCT="-"
 
-if [ "$MODULENAME" = "" ]; then exit 1; fi
+if [ "$MODULENAME" = "" && "$COMPONENTNAME" = "" ]; then exit 1; fi
 
 if [ "$BRANCH" = "STABLE" ]; then OUTPUTDIR=""; fi
 if [ "$BRANCH" = "STABLE" ]; then MANIFESTFILES="display-modules-*.json"; fi
@@ -18,15 +18,32 @@ gcloud auth activate-service-account 452091732215@developer.gserviceaccount.com 
 
 mkdir -p manifests
 gsutil -m cp gs://install-versions.risevision.com/${OUTPUTDIR}${MANIFESTFILES} manifests
-find manifests -name "*.json" -exec node ./node_modules/common-display-module/update-module-version.js '{}' $MODULENAME $VERSION $ROLLOUTPCT \;
 
-gsutil -m cp manifests/*.json gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION
-gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
-gsutil setmeta -h "Content-Disposition:attachment" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*.sh
-gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
-gsutil -m cp -p gs://install-versions.risevision.com/${OUTPUTDIR}*.{sh,exe,json} gs://install-versions.risevision.com/backups/$VERSION
-gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/releases/$MODULENAME/$VERSION
-gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/$OUTPUTDIR
+if [ "$MODULENAME" ];
+then
+  find manifests -name "*.json" -exec node ./node_modules/common-display-module/update-module-version.js '{}' $MODULENAME $VERSION $ROLLOUTPCT "module" \;
+
+  gsutil -m cp manifests/*.json gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION
+  gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
+  gsutil setmeta -h "Content-Disposition:attachment" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*.sh
+  gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
+  gsutil -m cp -p gs://install-versions.risevision.com/${OUTPUTDIR}*.{sh,exe,json} gs://install-versions.risevision.com/backups/$VERSION
+  gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/releases/$MODULENAME/$VERSION
+  gsutil -m cp -p gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/* gs://install-versions.risevision.com/$OUTPUTDIR
+fi
+
+if [ "$COMPONENTNAME" ];
+then
+  find manifests -name "*.json" -exec node ./node_modules/common-display-module/update-module-version.js '{}' $COMPONENTNAME $VERSION 0 "component" \;
+
+  gsutil cp manifests/*.json gs://install-versions.risevision.com/staging/components/$COMPONENTNAME/$VERSION
+  gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/components/$COMPONENTNAME/$VERSION/*
+  gsutil setmeta -h "Content-Disposition:attachment" gs://install-versions.risevision.com/staging/components/$COMPONENTNAME/$VERSION/*.sh
+  gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/staging/components/$COMPONENTNAME/$VERSION/*
+  gsutil cp -r -p gs://install-versions.risevision.com/staging/components/$COMPONENTNAME/$VERSION/* gs://install-versions.risevision.com/backups/components/$COMPONENTNAME/$VERSION
+  gsutil -m cp -r -p gs://install-versions.risevision.com/staging/components/$COMPONENTNAME/$VERSION/* gs://install-versions.risevision.com/components/$COMPONENTNAME/
+  gsutil -m cp -r -p gs://install-versions.risevision.com/staging/components/$COMPONENTNAME/$VERSION/* gs://install-versions.risevision.com/releases/components/$COMPONENTNAME/$VERSION
+fi
 
 if [ "$BRANCH" = "STABLE" ]
 then
