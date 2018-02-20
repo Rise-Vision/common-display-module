@@ -23,7 +23,7 @@
     "https-proxy-agent": "^2.1.0",
     "node-ipc": "^9.1.1",
     "proxy-agent": "^2.1.0",
-    "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#a808101"
+    "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#65abb7a"
   },
   "scripts": {
     "test-unit": "mocha --recursive test/unit",
