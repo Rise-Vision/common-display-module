@@ -62,6 +62,12 @@ describe("External Logger", ()=>{
       externalLogger.log("testEvent", {"detail": "testDetail"}, "testTable", "integrationTest");
       assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ failed entry file is required");
     });
+
+    it("should not send message to LM and log error if detail is null", ()=>{
+      const externalLogger = require('../../external-logger')("projectName", "datasetName", "testFile");
+      externalLogger.log("testEvent", null, "testTable", "integrationTest");
+      assert.deepEqual(spy.lastCall.arg, "external-logger error - integrationTest: BQ detail is required");
+    });
   });
 
   describe("LMS", ()=>{
