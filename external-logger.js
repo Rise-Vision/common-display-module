@@ -25,7 +25,7 @@ function validateMessage(message, detail) {
     error = "BQ table is required";
   } else if(!message.data.data.event) {
     error = "BQ event is required";
-  } else if(!Object.keys(detail).length){
+  } else if(!detail || typeof detail === "string" || !Object.keys(detail).length){
     /* Checks detail separately since its value combined
     with another object that specifies the event */
     error = "BQ detail is required";
