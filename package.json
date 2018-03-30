@@ -1,6 +1,6 @@
 {
   "name": "common-display-module",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "",
   "main": "common.js",
   "author": "Rise Vision",
@@ -23,7 +23,7 @@
     "https-proxy-agent": "^2.1.0",
     "node-ipc": "^9.1.1",
     "proxy-agent": "^2.1.0",
-    "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.2.5"
+    "rise-common-electron": "git://github.com/Rise-Vision/rise-common-electron.git#v2.2.8"
   },
   "scripts": {
     "test-unit": "mocha --recursive test/unit",
