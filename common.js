@@ -36,6 +36,10 @@ function getDisplaySettingsSync() {
   return settings;
 }
 
+function getDisplayProperty(key) {
+  return getDisplaySettings().then(settings => settings[key])
+}
+
 function getInstallDir() {
   return path.join(platform.getHomeDir(), "rvplayer");
 }
@@ -116,6 +120,7 @@ module.exports = {
     const filePath = path.join(module.exports.getInstallDir(version), fileName);
     return platform.fileExists(filePath);
   },
+  getDisplayProperty,
   getDisplaySettingsFileName,
   getDisplaySettings,
   getDisplaySettingsPath() {
