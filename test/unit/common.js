@@ -49,6 +49,13 @@ describe("Config", ()=>{
     .catch(assert.fail);
   });
 
+  it("gets an individual text file property", () => {
+    mock(platform, "readTextFile").resolveWith("text=test");
+
+    return common.getDisplayProperty("text")
+    .then(value => assert.equal(value, "test"));
+  });
+
   it("returns display settings file path", ()=>{
     var displaySettingsPath;
     mock(common, "getInstallDir").returnWith("root");
