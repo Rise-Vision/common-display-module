@@ -20,6 +20,13 @@ mkdir -p manifests
 gsutil -m cp gs://install-versions.risevision.com/${OUTPUTDIR}${MANIFESTFILES} manifests
 find manifests -name "*.json" -exec node ./node_modules/common-display-module/update-module-version.js '{}' $MODULENAME $VERSION $ROLLOUTPCT \;
 
+if [ "$BRANCH" = "STABLE" ]
+then
+  jq -c "." manifests/display-modules-manifest.json > manifests/temp.json
+  cp manifests/temp.json manifests/display-modules-manifest.json
+  rm manifests/temp.json
+fi
+
 gsutil -m cp manifests/*.json gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION
 gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*
 gsutil setmeta -h "Content-Disposition:attachment" gs://install-versions.risevision.com/staging/$MODULENAME/$VERSION/*.sh
