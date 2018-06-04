@@ -16,7 +16,7 @@ function init(_moduleName, _logger, paths) {
   pathList = (typeof paths === 'string')? [paths] : paths;
 }
 
-function sendWatchMessagesIfNecessary(clientListMessage) {
+function sendWatchMessagesOnce(clientListMessage) {
   if (watchMessagesAlreadySent) {
     return Promise.resolve();
   }
@@ -67,7 +67,7 @@ function reset() {
 module.exports = {
   init,
   sendWatchMessage,
-  sendWatchMessagesIfNecessary,
+  sendWatchMessagesOnce,
   isDeletedOrNoExist,
   readTextContent,
   reset

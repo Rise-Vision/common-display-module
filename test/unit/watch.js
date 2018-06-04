@@ -13,7 +13,7 @@ describe("watch / Unit", () => {
     simple.restore();
   });
 
-  describe("sendWatchMessagesIfNecessary", () => {
+  describe("sendWatchMessagesOnce", () => {
 
     const logger = {error: simple.stub()};
 
@@ -25,14 +25,14 @@ describe("watch / Unit", () => {
     it("should not send WATCH messages if no module is available", () => {
       watch.init('test-module', logger, "content.json");
 
-      return watch.sendWatchMessagesIfNecessary({clients: []})
+      return watch.sendWatchMessagesOnce({clients: []})
       .then(() => assert(!messaging.broadcastMessage.called));
     });
 
     it("should not send WATCH messages if local-storage module is not available", () => {
       watch.init('test-module', logger, "content.json");
 
-      return watch.sendWatchMessagesIfNecessary({
+      return watch.sendWatchMessagesOnce({
         clients: ["logging", "system-metrics"]
       })
       .then(() => assert(!messaging.broadcastMessage.called));
@@ -41,7 +41,7 @@ describe("watch / Unit", () => {
     it("should send WATCH message if local-storage module is available", () => {
       watch.init('test-module', logger, "content.json");
 
-      return watch.sendWatchMessagesIfNecessary({
+      return watch.sendWatchMessagesOnce({
         clients: ["logging", "system-metrics", "local-storage"]
       })
       .then(() => {
@@ -60,7 +60,7 @@ describe("watch / Unit", () => {
         "display.json", "content.json", "other.json"
       ]);
 
-      return watch.sendWatchMessagesIfNecessary({
+      return watch.sendWatchMessagesOnce({
         clients: ["logging", "system-metrics", "local-storage"]
       })
       .then(() => {
@@ -86,12 +86,12 @@ describe("watch / Unit", () => {
         "display.json", "content.json", "other.json"
       ]);
 
-      return watch.sendWatchMessagesIfNecessary({
+      return watch.sendWatchMessagesOnce({
         clients: ["logging", "system-metrics", "local-storage"]
       })
       .then(() => assert.equal(messaging.broadcastMessage.callCount, 3))
       .then(() =>
-        watch.sendWatchMessagesIfNecessary({
+        watch.sendWatchMessagesOnce({
           clients: ["logging", "system-metrics", "local-storage"]
         })
       )
@@ -100,7 +100,7 @@ describe("watch / Unit", () => {
 
   });
 
-  describe("sendWatchMessagesIfNecessary", () => {
+  describe("sendWatchMessagesOnce", () => {
 
     it("should recognize deleted message", () => {
       const check = watch.isDeletedOrNoExist({status: "DELETED"});
