@@ -12,8 +12,6 @@ describe("watch / Unit", () => {
   beforeEach(() => {
     simple.mock(messaging, "broadcastMessage").returnWith();
     simple.mock(common, "getDisplayId").resolveWith("DIS123");
-
-    watch.init('test-module', logger);
   });
 
   afterEach(() => {
@@ -22,21 +20,27 @@ describe("watch / Unit", () => {
   });
 
   it("should not send WATCH messages if no module is available", () => {
-    return watch.sendWatchMessagesIfNecessary({clients: []}, "content.json")
+    watch.init('test-module', logger, "content.json");
+
+    return watch.sendWatchMessagesIfNecessary({clients: []})
     .then(() => assert(!messaging.broadcastMessage.called));
   });
 
   it("should not send WATCH messages if local-storage module is not available", () => {
+    watch.init('test-module', logger, "content.json");
+
     return watch.sendWatchMessagesIfNecessary({
       clients: ["logging", "system-metrics"]
-    }, "content.json")
+    })
     .then(() => assert(!messaging.broadcastMessage.called));
   });
 
   it("should send WATCH message if local-storage module is available", () => {
+    watch.init('test-module', logger, "content.json");
+
     return watch.sendWatchMessagesIfNecessary({
       clients: ["logging", "system-metrics", "local-storage"]
-    }, "content.json")
+    })
     .then(() => {
       assert.equal(messaging.broadcastMessage.callCount, 1);
       const event = messaging.broadcastMessage.lastCall.args[0];
@@ -49,9 +53,13 @@ describe("watch / Unit", () => {
   });
 
   it("should send WATCH messages if local-storage module is available", () => {
+    watch.init('test-module', logger, [
+      "display.json", "content.json", "other.json"
+    ]);
+
     return watch.sendWatchMessagesIfNecessary({
       clients: ["logging", "system-metrics", "local-storage"]
-    }, ["display.json", "content.json", "other.json"])
+    })
     .then(() => {
       assert(messaging.broadcastMessage.called);
       assert.equal(messaging.broadcastMessage.callCount, 3);
@@ -71,14 +79,18 @@ describe("watch / Unit", () => {
   });
 
   it("should send WATCH messages only once", () => {
+    watch.init('test-module', logger, [
+      "display.json", "content.json", "other.json"
+    ]);
+
     return watch.sendWatchMessagesIfNecessary({
       clients: ["logging", "system-metrics", "local-storage"]
-    }, ["display.json", "content.json", "other.json"])
+    })
     .then(() => assert.equal(messaging.broadcastMessage.callCount, 3))
     .then(() =>
       watch.sendWatchMessagesIfNecessary({
         clients: ["logging", "system-metrics", "local-storage"]
-      }, ["display.json", "content.json", "other.json"])
+      })
     )
     .then(() => assert.equal(messaging.broadcastMessage.callCount, 3));
   });

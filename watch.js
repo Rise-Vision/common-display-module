@@ -6,18 +6,19 @@ const displayConfigBucket = "risevision-display-notifications";
 let watchMessagesAlreadySent = false;
 let moduleName;
 let logger;
+let pathList;
 
-function init(_moduleName, _logger) {
+function init(_moduleName, _logger, paths) {
   moduleName = _moduleName;
   logger = _logger;
+
+  pathList = (typeof paths === 'string')? [paths] : paths;
 }
 
-function sendWatchMessagesIfNecessary(clientListMessage, paths) {
+function sendWatchMessagesIfNecessary(clientListMessage) {
   if (watchMessagesAlreadySent) {
     return Promise.resolve();
   }
-
-  const pathList = (typeof paths === 'string')? [paths] : paths;
 
   if (clientListMessage.clients.includes("local-storage")) {
     return Promise.all(pathList.map(path => sendWatchMessage(path)))
