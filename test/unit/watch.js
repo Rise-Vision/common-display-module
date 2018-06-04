@@ -130,18 +130,22 @@ describe("watch / Unit", () => {
 
     it("should not execute action if file does not exist", () => {
       const action = simple.stub();
+      const message = {status: 'CURRENT', ospath: 'file.txt'};
+
       simple.mock(platform, "fileExists").returnWith(false);
 
-      return watch.readTextContent({ospath: 'file.txt'}, action)
+      return watch.readTextContent(message, action)
       .then(() => assert(!action.called));
     });
 
     it("should execute action if file exist and could be read", () => {
       const action = simple.stub();
+      const message = {status: 'CURRENT', ospath: 'file.txt'};
+
       simple.mock(platform, "fileExists").returnWith(true);
       simple.mock(platform, "readTextFile").resolveWith("SAMPLE");
 
-      return watch.readTextContent({ospath: 'file.txt'}, action)
+      return watch.readTextContent(message, action)
       .then(() => {
         assert.equal(action.callCount, 1);
         assert.equal(action.lastCall.args[0], "SAMPLE");
@@ -151,11 +155,12 @@ describe("watch / Unit", () => {
     it("should fail if file exist but could not be read", () => {
       const action = simple.stub();
       logger.error = simple.stub();
+      const message = {status: 'CURRENT', ospath: 'file.txt'};
 
       simple.mock(platform, "fileExists").returnWith(true);
       simple.mock(platform, "readTextFile").rejectWith({stack: 'FAILURE'});
 
-      return watch.readTextContent({ospath: 'file.txt'}, action)
+      return watch.readTextContent(message, action)
       .then(() => {
         assert.equal(action.callCount, 0);
 
@@ -167,11 +172,12 @@ describe("watch / Unit", () => {
       it("should log error if action fails", () => {
         const action = simple.stub().rejectWith({stack: 'FAILURE'});
         logger.error = simple.stub();
+        const message = {status: 'CURRENT', ospath: 'file.txt'};
 
         simple.mock(platform, "fileExists").returnWith(true);
         simple.mock(platform, "readTextFile").resolveWith("SAMPLE");
 
-        return watch.readTextContent({ospath: 'file.txt'}, action)
+        return watch.readTextContent(message, action)
         .then(() => {
           assert.equal(action.callCount, 1);
           assert.equal(action.lastCall.args[0], "SAMPLE");

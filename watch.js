@@ -46,8 +46,10 @@ function isDeletedOrNoExist(message) {
   return ["DELETED", "NOEXIST"].includes(message.status);
 }
 
-function readTextContent({ospath}, action) {
-  if (!ospath || !platform.fileExists(ospath)) {
+function readTextContent(message, action) {
+  const {ospath} = message;
+
+  if (isDeletedOrNoExist(message) || !ospath || !platform.fileExists(ospath)) {
     return Promise.resolve();
   }
 
