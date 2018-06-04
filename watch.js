@@ -41,10 +41,20 @@ function sendWatchMessage(path) {
   );
 }
 
+function isDeletedOrNoExist(message) {
+  return ["DELETED", "NOEXIST"].includes(message.status);
+}
+
 function reset() {
   moduleName = null;
   logger = null;
   watchMessagesAlreadySent = false;
 }
 
-module.exports = {init, sendWatchMessage, sendWatchMessagesIfNecessary, reset};
+module.exports = {
+  init,
+  sendWatchMessage,
+  sendWatchMessagesIfNecessary,
+  isDeletedOrNoExist,
+  reset
+};
