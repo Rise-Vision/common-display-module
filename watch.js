@@ -45,16 +45,17 @@ function isDeletedOrNoExist(message) {
   return ["DELETED", "NOEXIST"].includes(message.status);
 }
 
-function readTextContent(message, action) {
+function readTextContent(message) {
   const {ospath} = message;
 
   if (isDeletedOrNoExist(message) || !ospath || !platform.fileExists(ospath)) {
-    return Promise.resolve();
+    return Promise.resolve(null);
   }
 
   return platform.readTextFile(ospath)
-  .then(action)
-  .catch(error => logger.error(error.stack, `Could not read file ${ospath}`));
+  .catch(error => {
+    logger.error(error.stack, `Could not read file ${ospath}`)
+  });
 }
 
 function reset() {
