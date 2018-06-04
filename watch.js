@@ -1,3 +1,4 @@
+const platform = require("rise-common-electron/platform");
 const common = require('./common');
 const messaging = require('./messaging');
 
@@ -45,6 +46,16 @@ function isDeletedOrNoExist(message) {
   return ["DELETED", "NOEXIST"].includes(message.status);
 }
 
+function readTextContent({ospath}, action) {
+  if (!ospath || !platform.fileExists(ospath)) {
+    return Promise.resolve();
+  }
+
+  return platform.readTextFile(ospath)
+  .then(action)
+  .catch(error => logger.error(error.stack, `Could not read file ${ospath}`));
+}
+
 function reset() {
   moduleName = null;
   logger = null;
@@ -56,5 +67,6 @@ module.exports = {
   sendWatchMessage,
   sendWatchMessagesIfNecessary,
   isDeletedOrNoExist,
+  readTextContent,
   reset
 };

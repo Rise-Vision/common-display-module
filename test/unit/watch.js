@@ -1,5 +1,6 @@
 const assert = require("assert");
 const simple = require("simple-mock");
+const platform = require("rise-common-electron/platform");
 
 const common = require("../../common");
 const messaging = require("../../messaging");
@@ -7,19 +8,19 @@ const watch = require("../../watch");
 
 describe("watch / Unit", () => {
 
-  const logger = {error: simple.stub()};
-
-  beforeEach(() => {
-    simple.mock(messaging, "broadcastMessage").returnWith();
-    simple.mock(common, "getDisplayId").resolveWith("DIS123");
-  });
-
   afterEach(() => {
     watch.reset();
     simple.restore();
   });
 
   describe("sendWatchMessagesIfNecessary", () => {
+
+    const logger = {error: simple.stub()};
+
+    beforeEach(() => {
+      simple.mock(messaging, "broadcastMessage").returnWith();
+      simple.mock(common, "getDisplayId").resolveWith("DIS123");
+    });
 
     it("should not send WATCH messages if no module is available", () => {
       watch.init('test-module', logger, "content.json");
@@ -118,6 +119,67 @@ describe("watch / Unit", () => {
 
       assert(!check);
     });
+
+  });
+
+  describe("readTextContent", () => {
+
+    const logger = {};
+
+    beforeEach(() => watch.init('test-module', logger, "content.json"));
+
+    it("should not execute action if file does not exist", () => {
+      const action = simple.stub();
+      simple.mock(platform, "fileExists").returnWith(false);
+
+      return watch.readTextContent({ospath: 'file.txt'}, action)
+      .then(() => assert(!action.called));
+    });
+
+    it("should execute action if file exist and could be read", () => {
+      const action = simple.stub();
+      simple.mock(platform, "fileExists").returnWith(true);
+      simple.mock(platform, "readTextFile").resolveWith("SAMPLE");
+
+      return watch.readTextContent({ospath: 'file.txt'}, action)
+      .then(() => {
+        assert.equal(action.callCount, 1);
+        assert.equal(action.lastCall.args[0], "SAMPLE");
+      });
+    });
+
+    it("should fail if file exist but could not be read", () => {
+      const action = simple.stub();
+      logger.error = simple.stub();
+
+      simple.mock(platform, "fileExists").returnWith(true);
+      simple.mock(platform, "readTextFile").rejectWith({stack: 'FAILURE'});
+
+      return watch.readTextContent({ospath: 'file.txt'}, action)
+      .then(() => {
+        assert.equal(action.callCount, 0);
+
+        assert.equal(logger.error.callCount, 1);
+        assert.equal(logger.error.lastCall.args[0], 'FAILURE');
+      });
+    });
+
+      it("should log error if action fails", () => {
+        const action = simple.stub().rejectWith({stack: 'FAILURE'});
+        logger.error = simple.stub();
+
+        simple.mock(platform, "fileExists").returnWith(true);
+        simple.mock(platform, "readTextFile").resolveWith("SAMPLE");
+
+        return watch.readTextContent({ospath: 'file.txt'}, action)
+        .then(() => {
+          assert.equal(action.callCount, 1);
+          assert.equal(action.lastCall.args[0], "SAMPLE");
+
+          assert.equal(logger.error.callCount, 1);
+          assert.equal(logger.error.lastCall.args[0], 'FAILURE');
+        });
+      });
 
   });
 
