@@ -27,8 +27,7 @@ function getHeartbeatInterval() {
 }
 
 function startHeartbeatInterval(moduleName, schedule = setInterval) {
-  // watchdog module does not send heartbeats.
-  if(moduleName === 'watchdog') {
+  if(moduleName === 'watchdog' || moduleName === 'launcher') {
     return;
   }
 
