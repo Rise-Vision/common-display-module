@@ -1,14 +1,14 @@
-
-
 const MINUTES = 60000;
 const DEFAULT_HEARTBEAT_INTERVAL = 4;
 
 let timerId = null;
+let messaging;
+
+function setMessaging(_messaging) {
+  messaging = _messaging;
+}
 
 const DEFAULT_BROADCAST_ACTION = message => {
-  // nested require to avoid circular dependency problem.
-  const messaging = require("./messaging");
-
   messaging.broadcastMessage(message);
 }
 
@@ -49,4 +49,9 @@ function stop() {
   }
 }
 
-module.exports = {setBroadcastAction, startHeartbeatInterval, stop};
+module.exports = {
+  setBroadcastAction,
+  setMessaging,
+  startHeartbeatInterval,
+  stop
+};
