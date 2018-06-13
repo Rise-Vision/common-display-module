@@ -9,6 +9,12 @@ function setMessaging(_messaging) {
 }
 
 const DEFAULT_BROADCAST_ACTION = message => {
+  if (!messaging) {
+    log && log.error && log.error('messaging reference not defined');
+
+    return;
+  }
+
   messaging.broadcastMessage(message);
 }
 
