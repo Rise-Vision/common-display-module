@@ -10,15 +10,9 @@ function getDisplaySettingsFileName() {
 }
 
 function getDisplaySettings() {
-  return new Promise((resolve)=>{
-    platform.readTextFile(getDisplaySettingsFileName())
-      .then((contents)=>{
-        resolve(parsePropertyList(contents));
-      })
-      .catch(()=>{
-        resolve({});
-      });
-  });
+  return platform.readTextFile(getDisplaySettingsFileName())
+  .then((contents) => parsePropertyList(contents))
+  .catch(() => {});
 }
 
 function getTempDisplayId() {
