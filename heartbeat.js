@@ -1,13 +1,19 @@
-
-
 const MINUTES = 60000;
 const DEFAULT_HEARTBEAT_INTERVAL = 4;
 
 let timerId = null;
+let messaging;
+
+function setMessaging(_messaging) {
+  messaging = _messaging;
+}
 
 const DEFAULT_BROADCAST_ACTION = message => {
-  // nested require to avoid circular dependency problem.
-  const messaging = require("./messaging");
+  if (!messaging) {
+    log && log.error && log.error('messaging reference not defined');
+
+    return;
+  }
 
   messaging.broadcastMessage(message);
 }
@@ -27,8 +33,7 @@ function getHeartbeatInterval() {
 }
 
 function startHeartbeatInterval(moduleName, schedule = setInterval) {
-  // watchdog module does not send heartbeats.
-  if(moduleName === 'watchdog') {
+  if(moduleName === 'watchdog' || moduleName === 'launcher') {
     return;
   }
 
@@ -49,4 +54,9 @@ function stop() {
   }
 }
 
-module.exports = {setBroadcastAction, startHeartbeatInterval, stop};
+module.exports = {
+  setBroadcastAction,
+  setMessaging,
+  startHeartbeatInterval,
+  stop
+};

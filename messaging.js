@@ -123,3 +123,5 @@ module.exports = {
     sendToMessagingService,
     receiveMessages
 };
+
+heartbeat.setMessaging(module.exports);
