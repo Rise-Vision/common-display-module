@@ -21,17 +21,20 @@ function getDisplaySettings() {
   });
 }
 
+function getTempDisplayId() {
+  return "0." + module.exports.getMachineId();
+}
+
 function getDisplaySettingsSync() {
   var settings,
-    tempDisplayId = "0." + module.exports.getMachineId(),
     configExists = platform.fileExists(getDisplaySettingsFileName()),
     textFileString = configExists ? platform.readTextFileSync(getDisplaySettingsFileName()) : "";
 
-  if (!textFileString) {return {tempdisplayid: tempDisplayId};}
+  if (!textFileString) {return {tempdisplayid: getTempDisplayId()};}
 
   settings = parsePropertyList(textFileString);
 
-  if (!settings.displayid) {settings.tempdisplayid = tempDisplayId;}
+  if (!settings.displayid) {settings.tempdisplayid = getTempDisplayId();}
 
   return settings;
 }
