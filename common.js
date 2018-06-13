@@ -11,24 +11,34 @@ function getDisplaySettingsFileName() {
 
 function getDisplaySettings() {
   return platform.readTextFile(getDisplaySettingsFileName())
-  .then((contents) => parsePropertyList(contents))
+  .then(parsePropertyList)
   .catch(() => {});
 }
 
-function getTempDisplayId() {
-  return "0." + module.exports.getMachineId();
+function readDisplaySettings() {
+  const configExists = platform.fileExists(getDisplaySettingsFileName());
+
+  if (!configExists) {
+    return {};
+  }
+
+  const textFileString = platform.readTextFileSync(getDisplaySettingsFileName());
+
+  if (!textFileString) {
+    return {};
+  }
+
+  return parsePropertyList(textFileString);
 }
 
 function getDisplaySettingsSync() {
-  var settings,
-    configExists = platform.fileExists(getDisplaySettingsFileName()),
-    textFileString = configExists ? platform.readTextFileSync(getDisplaySettingsFileName()) : "";
+  const settings = readDisplaySettings();
 
-  if (!textFileString) {return {tempdisplayid: getTempDisplayId()};}
+  if (!settings.displayid) {
+    const tempDisplayId = "0." + module.exports.getMachineId();
 
-  settings = parsePropertyList(textFileString);
-
-  if (!settings.displayid) {settings.tempdisplayid = getTempDisplayId();}
+    settings.tempdisplayid = tempDisplayId;
+  }
 
   return settings;
 }
