@@ -5,14 +5,29 @@ const HttpProxyAgent = require("proxy-agent");
 const HttpsProxyAgent = require("https-proxy-agent");
 global.log = global.log || {error:console.log,debug:console.log};
 
+var displaySettings = null;
+
 function getDisplaySettingsFileName() {
   return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
+}
+
+function initDisplaySettings(settings) {
+  if (!settings.displayid) {
+    const tempDisplayId = "0." + module.exports.getMachineId();
+
+    settings.tempdisplayid = tempDisplayId;
+  }
+
+  displaySettings = settings;
+
+  return displaySettings;
 }
 
 function getDisplaySettings() {
   return platform.readTextFile(getDisplaySettingsFileName())
   .then(parsePropertyList)
-  .catch(() => {});
+  .catch(() => {})
+  .then(initDisplaySettings);
 }
 
 function readDisplaySettings() {
@@ -34,13 +49,7 @@ function readDisplaySettings() {
 function getDisplaySettingsSync() {
   const settings = readDisplaySettings();
 
-  if (!settings.displayid) {
-    const tempDisplayId = "0." + module.exports.getMachineId();
-
-    settings.tempdisplayid = tempDisplayId;
-  }
-
-  return settings;
+  return initDisplaySettings(settings);
 }
 
 function getDisplayProperty(key) {
