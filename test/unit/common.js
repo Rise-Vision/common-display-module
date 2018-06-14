@@ -39,8 +39,10 @@ describe("Config", ()=>{
   it("does not generate a tempdisplayid if a display id is already set", ()=>{
     mock(platform, "readTextFileSync").returnWith("displayid=something");
 
-    assert.equal(common.getDisplaySettingsSync().displayid, 'something');
-    assert(!common.getDisplaySettingsSync().tempdisplayid);
+    const settings = common.getDisplaySettingsSync();
+
+    assert.equal(settings.displayid, 'something');
+    assert(!settings.tempdisplayid);
   });
 
   it("reads display settings from cache on second synchronous call", ()=>{
