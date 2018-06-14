@@ -95,7 +95,8 @@ function updateDisplaySettings(newSettings){
       updatedSettings[key] != null ? `${key}=${updatedSettings[key]}\n` : ''
     ), "");
 
-    return platform.writeTextFile(displaySettingsFileName, updatedSettingsText);
+    return platform.writeTextFile(displaySettingsFileName, updatedSettingsText)
+    .then(() => {displaySettings = updatedSettings;});
   });
 }
 
