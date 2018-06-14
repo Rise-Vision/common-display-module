@@ -9,7 +9,11 @@ const platform = require("rise-common-electron").platform;
 const common = require("../../common.js");
 
 describe("Config", ()=>{
-  afterEach(()=>{
+  beforeEach(() => {
+    mock(platform, "fileExists").returnWith(true);
+  });
+
+  afterEach(() => {
     simpleMock.restore();
     mockfs.restore();
 
@@ -178,6 +182,7 @@ describe("Config", ()=>{
 
   it("should return false if BETA file does not exist", ()=>{
     mock(common, "getModuleVersion").returnWith("test");
+    mock(platform, "fileExists").returnWith(false);
 
     mockfs({
       [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
