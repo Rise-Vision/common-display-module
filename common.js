@@ -16,13 +16,10 @@ function displaySettingsCopy() {
 }
 
 function initDisplaySettings(settings) {
-  if (!settings.displayid) {
-    const tempDisplayId = "0." + module.exports.getMachineId();
-
-    settings.tempdisplayid = tempDisplayId;
-  }
-
-  displaySettings = settings;
+  displaySettings = settings.displayid ? settings :
+    Object.assign({}, settings, {
+      tempdisplayid: `0.${module.exports.getMachineId()}`
+    });
 
   return displaySettingsCopy();
 }
