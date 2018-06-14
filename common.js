@@ -96,7 +96,7 @@ function updateDisplaySettings(newSettings){
     ), "");
 
     return platform.writeTextFile(displaySettingsFileName, updatedSettingsText)
-    .then(() => {displaySettings = updatedSettings;});
+    .then(() => (displaySettings = updatedSettings));
   });
 }
 
