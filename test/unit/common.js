@@ -36,6 +36,24 @@ describe("Config", ()=>{
     assert(common.getDisplaySettingsSync().tempdisplayid);
   });
 
+  it("does not generate a tempdisplayid if a display id is already set", ()=>{
+    mock(platform, "readTextFileSync").returnWith("displayid=something");
+
+    assert.equal(common.getDisplaySettingsSync().displayid, 'something');
+    assert(!common.getDisplaySettingsSync().tempdisplayid);
+  });
+
+  it("reads display settings from cache on second synchronous call", ()=>{
+    mock(platform, "readTextFileSync").returnWith("displayid=something");
+
+    assert.equal(common.getDisplaySettingsSync().displayid, 'something');
+    assert.equal(platform.readTextFileSync.callCount, 1);
+
+    assert.equal(common.getDisplaySettingsSync().displayid, 'something');
+    // not read again
+    assert.equal(platform.readTextFileSync.callCount, 1);
+  });
+
   it("fails to get display settings asynchronously if text file cannot be read", ()=>{
     return common.getDisplaySettings()
     .then(assert.fail)
@@ -48,7 +66,24 @@ describe("Config", ()=>{
     .then((resp)=>{
       assert.equal(resp.text, "test");
     })
-    .catch(assert.fail);
+  });
+
+  it("reads display settings from cache on second asynchronous call", ()=>{
+    mock(platform, "readTextFile").resolveWith("text=test");
+
+    return common.getDisplaySettings()
+    .then(settings => {
+      assert.equal(settings.text, "test");
+      assert.equal(platform.readTextFile.callCount, 1);
+
+      return common.getDisplaySettings();
+    })
+    .then(settings => {
+      assert.equal(settings.text, "test");
+
+      // not read again
+      assert.equal(platform.readTextFile.callCount, 1);
+    })
   });
 
   it("gets an individual text file property", () => {
