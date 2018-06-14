@@ -11,6 +11,10 @@ function getDisplaySettingsFileName() {
   return path.join(module.exports.getInstallDir(), "RiseDisplayNetworkII.ini");
 }
 
+function displaySettingsCopy() {
+  return {...displaySettings};
+}
+
 function initDisplaySettings(settings) {
   if (!settings.displayid) {
     const tempDisplayId = "0." + module.exports.getMachineId();
@@ -20,12 +24,12 @@ function initDisplaySettings(settings) {
 
   displaySettings = settings;
 
-  return displaySettings;
+  return displaySettingsCopy();
 }
 
 function getDisplaySettings() {
   if (displaySettings) {
-    return Promise.resolve(displaySettings);
+    return Promise.resolve(displaySettingsCopy());
   }
 
   return platform.readTextFile(getDisplaySettingsFileName())
@@ -53,7 +57,7 @@ function readDisplaySettingsSync() {
 
 function getDisplaySettingsSync() {
   if (displaySettings) {
-    return displaySettings;
+    return displaySettingsCopy();
   }
 
   const settings = readDisplaySettingsSync();
@@ -88,7 +92,7 @@ function updateDisplaySettings(newSettings){
   return getDisplaySettings()
   .then(currentSettings => {
     const displaySettingsFileName = getDisplaySettingsFileName();
-    const updatedSettings = Object.assign({}, currentSettings, newSettings);
+    const updatedSettings = {...currentSettings, ...newSettings};
 
     const updatedSettingsText = Object.keys(updatedSettings)
     .reduce((text, key) => text + (
