@@ -1,5 +1,5 @@
 const path = require("path");
-const platform = require("rise-common-electron").platform;
+const {platform} = require("rise-common-electron");
 const portedPlatform = require("./platform");
 const HttpProxyAgent = require("proxy-agent");
 const HttpsProxyAgent = require("https-proxy-agent");
