@@ -12,7 +12,7 @@ function getDisplaySettingsFileName() {
 }
 
 function displaySettingsCopy() {
-  return {...displaySettings};
+  return Object.assign({}, displaySettings);
 }
 
 function initDisplaySettings(settings) {
@@ -92,7 +92,7 @@ function updateDisplaySettings(newSettings){
   return getDisplaySettings()
   .then(currentSettings => {
     const displaySettingsFileName = getDisplaySettingsFileName();
-    const updatedSettings = {...currentSettings, ...newSettings};
+    const updatedSettings = Object.assign({}, currentSettings, newSettings);
 
     const updatedSettingsText = Object.keys(updatedSettings)
     .reduce((text, key) => text + (
