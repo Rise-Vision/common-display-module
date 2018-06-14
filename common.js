@@ -24,6 +24,10 @@ function initDisplaySettings(settings) {
 }
 
 function getDisplaySettings() {
+  if (displaySettings) {
+    return Promise.resolve(displaySettings);
+  }
+
   return platform.readTextFile(getDisplaySettingsFileName())
   .then(parsePropertyList)
   .catch(() => {})
@@ -47,6 +51,10 @@ function readDisplaySettings() {
 }
 
 function getDisplaySettingsSync() {
+  if (displaySettings) {
+    return displaySettings;
+  }
+
   const settings = readDisplaySettings();
 
   return initDisplaySettings(settings);
@@ -212,5 +220,8 @@ module.exports = {
   isBetaLauncher() {
     const betaPath = path.join(module.exports.getModulePath("launcher"), "Installer", "BETA");
     return platform.fileExists(betaPath);
+  },
+  clear() {
+    displaySettings = null;
   }
 };

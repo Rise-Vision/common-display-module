@@ -12,6 +12,8 @@ describe("Config", ()=>{
   afterEach(()=>{
     simpleMock.restore();
     mockfs.restore();
+
+    common.clear();
   });
 
   it("gets display settings synchronously", ()=>{
