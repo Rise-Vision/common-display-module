@@ -35,13 +35,14 @@ function getDisplaySettings() {
 }
 
 function readDisplaySettings() {
-  const configExists = platform.fileExists(getDisplaySettingsFileName());
+  const displaySettingsFileName = getDisplaySettingsFileName();
+  const configExists = platform.fileExists(displaySettingsFileName);
 
   if (!configExists) {
     return {};
   }
 
-  const textFileString = platform.readTextFileSync(getDisplaySettingsFileName());
+  const textFileString = platform.readTextFileSync(displaySettingsFileName);
 
   if (!textFileString) {
     return {};
