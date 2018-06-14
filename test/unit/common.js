@@ -183,4 +183,51 @@ describe("Config", ()=>{
       assert(!common.isBetaLauncher());
   });
 
+  describe("updateDisplaySettings", ()=>{
+    beforeEach(()=>{
+      mock(platform, "writeTextFile").resolveWith();
+      mock(platform, "readTextFile").resolveWith("existing=data");
+    });
+
+    it("writes to RiseDisplayNetworkII.ini", ()=>{
+      return common.updateDisplaySettings({})
+      .then(() => {
+        assert(platform.writeTextFile.called);
+
+        const filePath = platform.writeTextFile.lastCall.args[0];
+        assert(/rvplayer\/RiseDisplayNetworkII.ini$/.test(filePath));
+      });
+    });
+
+    it("writes new properties", ()=>{
+      return common.updateDisplaySettings({new: "data"})
+      .then(() => {
+        assert(/new=data/.test(platform.writeTextFile.lastCall.args[1]));
+      });
+    });
+
+    it("preserves existing data", ()=>{
+      return common.updateDisplaySettings({new: "data"})
+      .then (() => {
+        assert(/existing=data/.test(platform.writeTextFile.lastCall.args[1]));
+      });
+    });
+
+    it("saves data after updating", ()=>{
+      return common.updateDisplaySettings({new: "data"})
+      .then (() => {
+        mock(platform, "readTextFile").resolveWith("");
+
+        return common.getDisplaySettings();
+      })
+      .then(settings => {
+        assert(!platform.readTextFile.called);
+
+        assert.equal(settings.existing, 'data');
+        assert.equal(settings.new, 'data');
+        assert(settings.tempdisplayid);
+      });
+    });
+  });
+
 });
