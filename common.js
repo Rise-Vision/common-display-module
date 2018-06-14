@@ -5,7 +5,7 @@ const HttpProxyAgent = require("proxy-agent");
 const HttpsProxyAgent = require("https-proxy-agent");
 global.log = global.log || {error:console.log,debug:console.log};
 
-var displaySettings = null;
+let displaySettings = null;
 
 function getDisplaySettingsFileName() {
   return path.join(module.exports.getInstallDir(), "RiseDisplayNetworkII.ini");
