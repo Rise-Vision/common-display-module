@@ -5,35 +5,61 @@ const HttpProxyAgent = require("proxy-agent");
 const HttpsProxyAgent = require("https-proxy-agent");
 global.log = global.log || {error:console.log,debug:console.log};
 
+let displaySettings = null;
+
 function getDisplaySettingsFileName() {
-  return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
+  return path.join(module.exports.getInstallDir(), "RiseDisplayNetworkII.ini");
+}
+
+function displaySettingsCopy() {
+  return Object.assign({}, displaySettings);
+}
+
+function initDisplaySettings(settings) {
+  displaySettings = settings.displayid ? settings :
+    Object.assign({}, settings, {
+      tempdisplayid: `0.${module.exports.getMachineId()}`
+    });
+
+  return displaySettingsCopy();
 }
 
 function getDisplaySettings() {
-  return new Promise((resolve)=>{
-    platform.readTextFile(getDisplaySettingsFileName())
-      .then((contents)=>{
-        resolve(parsePropertyList(contents));
-      })
-      .catch(()=>{
-        resolve({});
-      });
-  });
+  if (displaySettings) {
+    return Promise.resolve(displaySettingsCopy());
+  }
+
+  return platform.readTextFile(getDisplaySettingsFileName())
+  .then(parsePropertyList)
+  .catch(() => {})
+  .then(initDisplaySettings);
+}
+
+function readDisplaySettingsSync() {
+  const displaySettingsFileName = getDisplaySettingsFileName();
+  const configExists = platform.fileExists(displaySettingsFileName);
+
+  if (!configExists) {
+    return {};
+  }
+
+  const textFileString = platform.readTextFileSync(displaySettingsFileName);
+
+  if (!textFileString) {
+    return {};
+  }
+
+  return parsePropertyList(textFileString);
 }
 
 function getDisplaySettingsSync() {
-  var settings,
-    tempDisplayId = "0." + module.exports.getMachineId(),
-    configExists = platform.fileExists(getDisplaySettingsFileName()),
-    textFileString = configExists ? platform.readTextFileSync(getDisplaySettingsFileName()) : "";
+  if (displaySettings) {
+    return displaySettingsCopy();
+  }
 
-  if (!textFileString) {return {tempdisplayid: tempDisplayId};}
+  const settings = readDisplaySettingsSync();
 
-  settings = parsePropertyList(textFileString);
-
-  if (!settings.displayid) {settings.tempdisplayid = tempDisplayId;}
-
-  return settings;
+  return initDisplaySettings(settings);
 }
 
 function getDisplayProperty(key) {
@@ -53,6 +79,26 @@ function parsePropertyList(list) {
   });
 
   return result;
+}
+
+function updateDisplaySettings(newSettings){
+  if (typeof newSettings != "object") {
+    return Promise.reject(new Error("Incorrect configuration type"));
+  }
+
+  return getDisplaySettings()
+  .then(currentSettings => {
+    const displaySettingsFileName = getDisplaySettingsFileName();
+    const updatedSettings = Object.assign({}, currentSettings, newSettings);
+
+    const updatedSettingsText = Object.keys(updatedSettings)
+    .reduce((text, key) => text + (
+      updatedSettings[key] != null ? `${key}=${updatedSettings[key]}\n` : ''
+    ), "");
+
+    return platform.writeTextFile(displaySettingsFileName, updatedSettingsText)
+    .then(() => (displaySettings = updatedSettings));
+  });
 }
 
 function getMachineIdPath() {
@@ -124,9 +170,10 @@ module.exports = {
   getDisplaySettingsFileName,
   getDisplaySettings,
   getDisplaySettingsPath() {
-    return path.join(module.exports.getInstallDir(), "RiseDisplayNetworkII.ini");
+    return module.exports.getDisplaySettingsFileName();
   },
   getDisplaySettingsSync,
+  updateDisplaySettings,
   getDisplayId,
   getInstallDir,
   getScriptDir() {
@@ -196,5 +243,8 @@ module.exports = {
   isBetaLauncher() {
     const betaPath = path.join(module.exports.getModulePath("launcher"), "Installer", "BETA");
     return platform.fileExists(betaPath);
+  },
+  clear() {
+    displaySettings = null;
   }
 };

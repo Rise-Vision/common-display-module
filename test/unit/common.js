@@ -9,9 +9,15 @@ const platform = require("rise-common-electron").platform;
 const common = require("../../common.js");
 
 describe("Config", ()=>{
-  afterEach(()=>{
+  beforeEach(() => {
+    mock(platform, "fileExists").returnWith(true);
+  });
+
+  afterEach(() => {
     simpleMock.restore();
     mockfs.restore();
+
+    common.clear();
   });
 
   it("gets display settings synchronously", ()=>{
@@ -34,6 +40,26 @@ describe("Config", ()=>{
     assert(common.getDisplaySettingsSync().tempdisplayid);
   });
 
+  it("does not generate a tempdisplayid if a display id is already set", ()=>{
+    mock(platform, "readTextFileSync").returnWith("displayid=something");
+
+    const settings = common.getDisplaySettingsSync();
+
+    assert.equal(settings.displayid, 'something');
+    assert(!settings.tempdisplayid);
+  });
+
+  it("reads display settings from cache on second synchronous call", ()=>{
+    mock(platform, "readTextFileSync").returnWith("displayid=something");
+
+    assert.equal(common.getDisplaySettingsSync().displayid, 'something');
+    assert.equal(platform.readTextFileSync.callCount, 1);
+
+    assert.equal(common.getDisplaySettingsSync().displayid, 'something');
+    // not read again
+    assert.equal(platform.readTextFileSync.callCount, 1);
+  });
+
   it("fails to get display settings asynchronously if text file cannot be read", ()=>{
     return common.getDisplaySettings()
     .then(assert.fail)
@@ -46,7 +72,24 @@ describe("Config", ()=>{
     .then((resp)=>{
       assert.equal(resp.text, "test");
     })
-    .catch(assert.fail);
+  });
+
+  it("reads display settings from cache on second asynchronous call", ()=>{
+    mock(platform, "readTextFile").resolveWith("text=test");
+
+    return common.getDisplaySettings()
+    .then(settings => {
+      assert.equal(settings.text, "test");
+      assert.equal(platform.readTextFile.callCount, 1);
+
+      return common.getDisplaySettings();
+    })
+    .then(settings => {
+      assert.equal(settings.text, "test");
+
+      // not read again
+      assert.equal(platform.readTextFile.callCount, 1);
+    })
   });
 
   it("gets an individual text file property", () => {
@@ -139,11 +182,59 @@ describe("Config", ()=>{
 
   it("should return false if BETA file does not exist", ()=>{
     mock(common, "getModuleVersion").returnWith("test");
+    mock(platform, "fileExists").returnWith(false);
 
     mockfs({
       [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
 
       assert(!common.isBetaLauncher());
+  });
+
+  describe("updateDisplaySettings", ()=>{
+    beforeEach(()=>{
+      mock(platform, "writeTextFile").resolveWith();
+      mock(platform, "readTextFile").resolveWith("existing=data");
+    });
+
+    it("writes to RiseDisplayNetworkII.ini", ()=>{
+      return common.updateDisplaySettings({})
+      .then(() => {
+        assert(platform.writeTextFile.called);
+
+        const filePath = platform.writeTextFile.lastCall.args[0];
+        assert(/rvplayer\/RiseDisplayNetworkII.ini$/.test(filePath));
+      });
+    });
+
+    it("writes new properties", ()=>{
+      return common.updateDisplaySettings({new: "data"})
+      .then(() => {
+        assert(/new=data/.test(platform.writeTextFile.lastCall.args[1]));
+      });
+    });
+
+    it("preserves existing data", ()=>{
+      return common.updateDisplaySettings({new: "data"})
+      .then (() => {
+        assert(/existing=data/.test(platform.writeTextFile.lastCall.args[1]));
+      });
+    });
+
+    it("saves data after updating", ()=>{
+      return common.updateDisplaySettings({new: "data"})
+      .then (() => {
+        mock(platform, "readTextFile").resolveWith("");
+
+        return common.getDisplaySettings();
+      })
+      .then(settings => {
+        assert(!platform.readTextFile.called);
+
+        assert.equal(settings.existing, 'data');
+        assert.equal(settings.new, 'data');
+        assert(settings.tempdisplayid);
+      });
+    });
   });
 
 });
