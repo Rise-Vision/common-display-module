@@ -8,7 +8,7 @@ global.log = global.log || {error:console.log,debug:console.log};
 var displaySettings = null;
 
 function getDisplaySettingsFileName() {
-  return path.join(getInstallDir(), "RiseDisplayNetworkII.ini");
+  return path.join(module.exports.getInstallDir(), "RiseDisplayNetworkII.ini");
 }
 
 function initDisplaySettings(settings) {
@@ -34,7 +34,7 @@ function getDisplaySettings() {
   .then(initDisplaySettings);
 }
 
-function readDisplaySettings() {
+function readDisplaySettingsSync() {
   const displaySettingsFileName = getDisplaySettingsFileName();
   const configExists = platform.fileExists(displaySettingsFileName);
 
@@ -56,7 +56,7 @@ function getDisplaySettingsSync() {
     return displaySettings;
   }
 
-  const settings = readDisplaySettings();
+  const settings = readDisplaySettingsSync();
 
   return initDisplaySettings(settings);
 }
@@ -78,6 +78,25 @@ function parsePropertyList(list) {
   });
 
   return result;
+}
+
+function updateDisplaySettings(newSettings){
+  if (typeof newSettings != "object") {
+    return Promise.reject(new Error("Incorrect configuration type"));
+  }
+
+  return getDisplaySettings()
+  .then(currentSettings => {
+    const displaySettingsFileName = getDisplaySettingsFileName();
+    const updatedSettings = Object.assign({}, currentSettings, newSettings);
+
+    const updatedSettingsText = Object.keys(updatedSettings)
+    .reduce((text, key) => text + (
+      updatedSettings[key] != null ? `${key}=${updatedSettings[key]}\n` : ''
+    ), "");
+
+    return platform.writeTextFile(displaySettingsFileName, updatedSettingsText);
+  });
 }
 
 function getMachineIdPath() {
@@ -149,9 +168,10 @@ module.exports = {
   getDisplaySettingsFileName,
   getDisplaySettings,
   getDisplaySettingsPath() {
-    return path.join(module.exports.getInstallDir(), "RiseDisplayNetworkII.ini");
+    return module.exports.getDisplaySettingsFileName();
   },
   getDisplaySettingsSync,
+  updateDisplaySettings,
   getDisplayId,
   getInstallDir,
   getScriptDir() {
