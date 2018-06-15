@@ -138,22 +138,38 @@ describe("Config", ()=>{
     assert(!agents.httpsAgent);
   });
 
-  it("should provide display id when display id is read from file", () => {
+  it("should provide display id async when display id is read from file", () => {
     mock(platform, "readTextFile").resolveWith("displayid=abc123");
     return common.getDisplayId()
-      .then((displayId)=>{
-        assert.equal(displayId, "abc123");
-      })
-      .catch(assert.fail);
+    .then((displayId)=>{
+      assert.equal(displayId, "abc123");
+    });
   });
 
-  it("should provide display id from a temp created one", () => {
+  it("should provide display id async from a temp created one", () => {
     mock(platform, "readTextFile").resolveWith("text=test");
     return common.getDisplayId()
-      .then((displayId)=>{
-        assert(displayId);
-      })
-      .catch(assert.fail);
+    .then((displayId)=>{
+      assert(displayId);
+      assert(displayId.startsWith('0.'));
+    });
+  });
+
+  it("should provide display id sync when display id is read from file", () => {
+    mock(platform, "readTextFileSync").returnWith("displayid=abc123");
+
+    const displayId = common.getDisplayIdSync();
+
+    assert.equal(displayId, "abc123");
+  });
+
+  it("should provide display id sync from a temp created one", () => {
+    mock(platform, "readTextFileSync").returnWith("text=test");
+
+    const displayId = common.getDisplayIdSync();
+
+    assert(displayId);
+    assert(displayId.startsWith('0.'));
   });
 
   it("should provide latest version in manifest", () => {

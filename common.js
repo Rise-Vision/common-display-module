@@ -120,17 +120,14 @@ function getProxyAgents() {
 }
 
 function getDisplayId() {
-  return new Promise((res) => {
-    module.exports.getDisplaySettings()
-      .then(settings=>{
-        if (!settings.displayid) {
-          const tempDisplayId = "0." + module.exports.getMachineId();
-          res(tempDisplayId);
-        }
+  return module.exports.getDisplaySettings()
+  .then(settings => settings.displayid || settings.tempdisplayid);
+}
 
-        res(settings.displayid);
-      })
-  });
+function getDisplayIdSync() {
+  const settings = module.exports.getDisplaySettingsSync();
+
+  return settings.displayid || settings.tempdisplayid;
 }
 
 function getLatestVersionInManifest() {
@@ -175,6 +172,7 @@ module.exports = {
   getDisplaySettingsSync,
   updateDisplaySettings,
   getDisplayId,
+  getDisplayIdSync,
   getInstallDir,
   getScriptDir() {
     return path.join(module.exports.getInstallDir(), "scripts");
