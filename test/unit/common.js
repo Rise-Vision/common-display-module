@@ -185,8 +185,37 @@ describe("Config", ()=>{
     assert.equal(common.getLatestVersionInManifest(), "2017.11.20.23.14");
   });
 
-  describe("updateDisplaySettings", ()=>{
-    it("should return true if BETA file exists", ()=>{
+  describe("getModulePath", () => {
+    it("should get the module path", () => {
+      mock(common, "getInstallDir").returnWith("base");
+      mock(common, "getModuleVersion").returnWith("1.1");
+      mock(log, "error").returnWith();
+
+      assert.equal(common.getModulePath('launcher'), 'base/modules/launcher/1.1');
+      assert(!log.error.called);
+    });
+
+    it("should not get the module path if the module version cannot be obtained, and should log error", () => {
+      mock(common, "getInstallDir").returnWith("base");
+      mock(common, "getModuleVersion").returnWith();
+      mock(log, "error").returnWith();
+
+      assert(!common.getModulePath('launcher'));
+      assert(log.error.called);
+    });
+
+    it("should not log error if the module version cannot be obtained and logError flag is set to false", () => {
+      mock(common, "getInstallDir").returnWith("base");
+      mock(common, "getModuleVersion").returnWith();
+      mock(log, "error").returnWith();
+
+      assert(!common.getModulePath('launcher', false));
+      assert(!log.error.called);
+    });
+  });
+
+  describe("updateDisplaySettings", () => {
+    it("should return true if BETA file exists", () => {
       mock(common, "getModuleVersion").returnWith("test");
       mock(log, "error").returnWith();
 
@@ -199,7 +228,7 @@ describe("Config", ()=>{
         assert(!log.error.called);
     });
 
-    it("should return false if BETA file does not exist", ()=>{
+    it("should return false if BETA file does not exist", () => {
       mock(common, "getModuleVersion").returnWith("test");
       mock(platform, "fileExists").returnWith(false);
       mock(log, "error").returnWith();
@@ -211,7 +240,7 @@ describe("Config", ()=>{
         assert(!log.error.called);
     });
 
-    it("should return false if the launcher module path cannot be obtained", ()=>{
+    it("should return false if the launcher module path cannot be obtained", () => {
       mock(common, "getModulePath").returnWith();
       mock(log, "error").returnWith();
 
