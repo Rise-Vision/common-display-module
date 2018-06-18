@@ -239,7 +239,13 @@ module.exports = {
   },
   platform: portedPlatform,
   isBetaLauncher() {
-    const betaPath = path.join(module.exports.getModulePath("launcher"), "Installer", "BETA");
+    const modulePath = module.exports.getModulePath("launcher");
+
+    if (!modulePath) {
+      return false;
+    }
+
+    const betaPath = path.join(modulePath, "Installer", "BETA");
     return platform.fileExists(betaPath);
   },
   clear() {
