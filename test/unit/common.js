@@ -25,7 +25,7 @@ describe("Config", ()=>{
     assert(common.getDisplaySettingsSync().tempdisplayid);
   });
 
-  it("gets module path", ()=>{
+  it("gets module dir", ()=>{
     mock(common, "getInstallDir").returnWith("rvplayer");
     assert.equal(common.getModuleDir(), pathJoin("rvplayer", "modules"));
   });
@@ -185,25 +185,39 @@ describe("Config", ()=>{
     assert.equal(common.getLatestVersionInManifest(), "2017.11.20.23.14");
   });
 
-  it("should return true if BETA file exists", ()=>{
-    mock(common, "getModuleVersion").returnWith("test");
+  describe("updateDisplaySettings", ()=>{
+    it("should return true if BETA file exists", ()=>{
+      mock(common, "getModuleVersion").returnWith("test");
+      mock(log, "error").returnWith();
 
-    mockfs({
-      [`${platform.getHomeDir()}/rvplayer/modules/launcher/test/Installer/`]: {
-        "BETA": ""
-      }});
+      mockfs({
+        [`${platform.getHomeDir()}/rvplayer/modules/launcher/test/Installer/`]: {
+          "BETA": ""
+        }});
 
-      assert(common.isBetaLauncher());
-  });
+        assert(common.isBetaLauncher());
+        assert(!log.error.called);
+    });
 
-  it("should return false if BETA file does not exist", ()=>{
-    mock(common, "getModuleVersion").returnWith("test");
-    mock(platform, "fileExists").returnWith(false);
+    it("should return false if BETA file does not exist", ()=>{
+      mock(common, "getModuleVersion").returnWith("test");
+      mock(platform, "fileExists").returnWith(false);
+      mock(log, "error").returnWith();
 
-    mockfs({
-      [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
+      mockfs({
+        [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
+
+        assert(!common.isBetaLauncher());
+        assert(!log.error.called);
+    });
+
+    it("should return false if the launcher module path cannot be obtained", ()=>{
+      mock(common, "getModulePath").returnWith();
+      mock(log, "error").returnWith();
 
       assert(!common.isBetaLauncher());
+      assert(!log.error.called);
+    });
   });
 
   describe("updateDisplaySettings", ()=>{
