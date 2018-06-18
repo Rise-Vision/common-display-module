@@ -196,10 +196,10 @@ module.exports = {
     const moduleManifestEntry = module.exports.getManifest()[name];
     return moduleManifestEntry && moduleManifestEntry.version;
   },
-  getModulePath(name) {
+  getModulePath(name, logErrors = true) {
     const moduleVersion = module.exports.getModuleVersion(name);
     if (!moduleVersion) {
-      log.error(`No version found for ${name}`);
+      logErrors && log.error(`No version found for ${name}`);
       return false;
     }
 
@@ -239,7 +239,13 @@ module.exports = {
   },
   platform: portedPlatform,
   isBetaLauncher() {
-    const betaPath = path.join(module.exports.getModulePath("launcher"), "Installer", "BETA");
+    const modulePath = module.exports.getModulePath("launcher", false);
+
+    if (!modulePath) {
+      return false;
+    }
+
+    const betaPath = path.join(modulePath, "Installer", "BETA");
     return platform.fileExists(betaPath);
   },
   clear() {

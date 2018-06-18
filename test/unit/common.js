@@ -25,7 +25,7 @@ describe("Config", ()=>{
     assert(common.getDisplaySettingsSync().tempdisplayid);
   });
 
-  it("gets module path", ()=>{
+  it("gets module dir", ()=>{
     mock(common, "getInstallDir").returnWith("rvplayer");
     assert.equal(common.getModuleDir(), pathJoin("rvplayer", "modules"));
   });
@@ -185,25 +185,68 @@ describe("Config", ()=>{
     assert.equal(common.getLatestVersionInManifest(), "2017.11.20.23.14");
   });
 
-  it("should return true if BETA file exists", ()=>{
-    mock(common, "getModuleVersion").returnWith("test");
+  describe("getModulePath", () => {
+    it("should get the module path", () => {
+      mock(common, "getInstallDir").returnWith("base");
+      mock(common, "getModuleVersion").returnWith("1.1");
+      mock(log, "error").returnWith();
 
-    mockfs({
-      [`${platform.getHomeDir()}/rvplayer/modules/launcher/test/Installer/`]: {
-        "BETA": ""
-      }});
+      assert.equal(common.getModulePath('launcher'), 'base/modules/launcher/1.1');
+      assert(!log.error.called);
+    });
 
-      assert(common.isBetaLauncher());
+    it("should not get the module path if the module version cannot be obtained, and should log error", () => {
+      mock(common, "getInstallDir").returnWith("base");
+      mock(common, "getModuleVersion").returnWith();
+      mock(log, "error").returnWith();
+
+      assert(!common.getModulePath('launcher'));
+      assert(log.error.called);
+    });
+
+    it("should not log error if the module version cannot be obtained and logError flag is set to false", () => {
+      mock(common, "getInstallDir").returnWith("base");
+      mock(common, "getModuleVersion").returnWith();
+      mock(log, "error").returnWith();
+
+      assert(!common.getModulePath('launcher', false));
+      assert(!log.error.called);
+    });
   });
 
-  it("should return false if BETA file does not exist", ()=>{
-    mock(common, "getModuleVersion").returnWith("test");
-    mock(platform, "fileExists").returnWith(false);
+  describe("updateDisplaySettings", () => {
+    it("should return true if BETA file exists", () => {
+      mock(common, "getModuleVersion").returnWith("test");
+      mock(log, "error").returnWith();
 
-    mockfs({
-      [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
+      mockfs({
+        [`${platform.getHomeDir()}/rvplayer/modules/launcher/test/Installer/`]: {
+          "BETA": ""
+        }});
+
+        assert(common.isBetaLauncher());
+        assert(!log.error.called);
+    });
+
+    it("should return false if BETA file does not exist", () => {
+      mock(common, "getModuleVersion").returnWith("test");
+      mock(platform, "fileExists").returnWith(false);
+      mock(log, "error").returnWith();
+
+      mockfs({
+        [`${platform.getHomeDir()}rvplayer/modules/launcher/test/Installer/`]: {}});
+
+        assert(!common.isBetaLauncher());
+        assert(!log.error.called);
+    });
+
+    it("should return false if the launcher module path cannot be obtained", () => {
+      mock(common, "getModulePath").returnWith();
+      mock(log, "error").returnWith();
 
       assert(!common.isBetaLauncher());
+      assert(!log.error.called);
+    });
   });
 
   describe("updateDisplaySettings", ()=>{
