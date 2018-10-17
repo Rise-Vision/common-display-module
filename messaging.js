@@ -2,6 +2,7 @@ const ipc = require('node-ipc');
 const EventEmitter = require('events');
 
 const heartbeat = require("./heartbeat");
+const msgTimeout = 2000;
 
 let lmsClient = null, ipcConnection = null;
 
@@ -32,6 +33,10 @@ function connect(id) {
                         },
                         getClientList: () => {
                           ipc.of.lms.emit("clientlist-request");
+                        },
+                        checkMSConnection: (res) => {
+                          ipc.of.lms.once("ms-connection-state", res);
+                          ipc.of.lms.emit("ms-connectivity-request");
                         },
                         toMessagingService: (message) => {
                           ipc.of.lms.emit("message", Object.assign({}, message, {through: "ms"}));
@@ -114,6 +119,16 @@ function sendToMessagingService(message) {
   });
 }
 
+function checkMessagingServiceConnection() {
+  if (lmsClient === null) {return Promise.reject(Error("Not connected"));}
+
+  return new Promise((res, rej)=>{
+    lmsClient.checkMSConnection(res);
+
+    setTimeout(()=>rej(Error("ms-connection-state timeout")), msgTimeout);
+  });
+}
+
 module.exports = {
     connect,
     disconnect,
@@ -121,6 +136,7 @@ module.exports = {
     broadcastToLocalWS,
     getClientList,
     sendToMessagingService,
+    checkMessagingServiceConnection,
     receiveMessages
 };
 
