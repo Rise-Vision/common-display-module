@@ -1,6 +1,6 @@
 {
   "name": "common-display-module",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "",
   "main": "common.js",
   "author": "Rise Vision",
@@ -13,10 +13,10 @@
     "url": "https://github.com/Rise-Vision/common-display-module/issues"
   },
   "devDependencies": {
-    "istanbul": "^0.4.0",
     "mocha": "^4.0.0",
     "mocha-junit-reporter": "^1.15.0",
     "mock-fs": "^4.4.2",
+    "nyc": "latest",
     "simple-mock": "^0.4.1"
   },
   "dependencies": {
@@ -27,7 +27,7 @@
   },
   "scripts": {
     "test-unit": "mocha --recursive test/unit",
-    "test": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter mocha-junit-reporter --reporter-options mochaFile=test/test-results.xml --recursive test/**/*",
+    "test": "nyc mocha --recursive test/**/*",
     "test-integration": "mocha -t 10000 test/integration"
   }
 }
