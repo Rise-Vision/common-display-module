@@ -96,6 +96,8 @@ function updateDisplaySettings(newSettings){
       updatedSettings[key] != null ? `${key}=${updatedSettings[key]}\n` : ''
     ), "");
 
+    log.debug(`update display setttings: ${JSON.stringify(newSettings)}, ${JSON.stringify(currentSettings)} ${updatedSettingsText}`);
+
     return platform.writeTextFile(displaySettingsFileName, updatedSettingsText)
     .then(() => (displaySettings = updatedSettings));
   });
