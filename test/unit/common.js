@@ -185,6 +185,47 @@ describe("Config", ()=>{
     assert.equal(common.getLatestVersionInManifest(), "2017.11.20.23.14");
   });
 
+  it("should return stage environment flag when stage property exists", () => {
+    mock(platform, "readTextFileSync").returnWith("environment=stage");
+
+    const stage = common.isStageEnvironment();
+
+    assert.equal(stage, true);
+  });
+
+  it("should return stage environment flag when stage property exists in different case", () => {
+    mock(platform, "readTextFileSync").returnWith("environment=StAge");
+
+    const stage = common.isStageEnvironment();
+
+    assert.equal(stage, true);
+  });
+
+
+  it("should return stage environment flag when stage property does not exist", () => {
+    mock(platform, "readTextFileSync").returnWith("");
+
+    const stage = common.isStageEnvironment();
+
+    assert.equal(stage, false);
+  });
+
+  it("should return stage environment flag when stage property is empty", () => {
+    mock(platform, "readTextFileSync").returnWith("environment=");
+
+    const stage = common.isStageEnvironment();
+
+    assert.equal(stage, false);
+  });
+
+  it("should return stage environment flag when stage property is not set to stage", () => {
+    mock(platform, "readTextFileSync").returnWith("environment=production");
+
+    const stage = common.isStageEnvironment();
+
+    assert.equal(stage, false);
+  });
+
   describe("getModulePath", () => {
     it("should get the module path", () => {
       mock(common, "getInstallDir").returnWith("base");
