@@ -248,6 +248,14 @@ module.exports = {
     const betaPath = path.join(modulePath, "Installer", "BETA");
     return platform.fileExists(betaPath);
   },
+  isStageEnvironment() {
+    const displaySettings = getDisplaySettingsSync();
+    if (!displaySettings.environment) {
+      return false;
+    }
+
+    return displaySettings.environment.toLowerCase() === "stage";
+  },
   clear() {
     displaySettings = null;
   }
